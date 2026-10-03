@@ -20,7 +20,7 @@ export function PhotoCapture({
 
   if (step === "live") {
     return (
-      <div className="flex min-h-[85dvh] flex-col bg-foreground px-5 py-4 text-background">
+      <div className="fixed inset-x-0 top-0 z-50 mx-auto flex min-h-dvh w-full max-w-md flex-col bg-foreground px-5 py-4 text-background">
         <div className="flex items-center justify-between text-xs">
           <span className="rounded-full bg-primary px-3 py-1 text-primary-foreground">Dentro da unidade · 34 m</span>
           <span className="rounded-full bg-background/15 px-3 py-1">07 Out · 08:43</span>

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { FolhaLogo } from "@/features/folha/components/folha-logo";
 import { signedKey } from "@/features/folha/offline";
 
@@ -29,11 +28,13 @@ export function SignMonth({
   drawsTotal: number;
 }) {
   const router = useRouter();
+  const [ready, setReady] = useState(false);
   const [open, setOpen] = useState(false);
   const [signed, setSigned] = useState(false);
 
   useEffect(() => {
     setSigned(window.localStorage.getItem(signedKey(cycleId, unitId)) === "1");
+    setReady(true);
   }, [cycleId, unitId]);
 
   function confirm() {
@@ -42,6 +43,8 @@ export function SignMonth({
     setOpen(false);
     router.push("/folha/chefe/fila");
   }
+
+  if (!ready) return <div className="min-h-[70dvh]" />;
 
   if (signed) {
     return (
@@ -101,19 +104,18 @@ export function SignMonth({
       <Button className="mt-8 w-full" onClick={() => setOpen(true)} type="button">
         Assinar o mês
       </Button>
-      <Dialog onOpenChange={setOpen} open={open}>
-        <DialogContent showCloseButton>
-          <DialogHeader>
-            <DialogTitle>Confirme que é a {chiefName}</DialogTitle>
-            <DialogDescription>A atestação é uma assinatura com responsabilidade pessoal.</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
+      {open ? (
+        <div className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md">
+          <button className="absolute inset-x-0 bottom-0 top-[-100vh] bg-foreground/20" onClick={() => setOpen(false)} type="button" />
+          <div className="relative space-y-4 rounded-t-3xl bg-card p-6 pb-10 text-center shadow-lg">
+            <p className="text-lg font-semibold">Confirme que é a {chiefName}</p>
+            <p className="text-sm text-muted-foreground">A atestação é uma assinatura com responsabilidade pessoal.</p>
             <Button className="w-full bg-foreground text-background hover:bg-foreground/90" onClick={confirm} type="button">
               Usar impressão digital
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

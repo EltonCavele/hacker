@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Camera, CheckCircle, Layers, User } from "reicon-react";
 import { cn } from "@/lib/utils";
+import { FolhaDeskSidebar } from "@/features/folha/components/folha-desk-sidebar";
 import { FolhaLogo } from "@/features/folha/components/folha-logo";
 import type { FolhaRole } from "@/features/folha/types";
 
@@ -23,11 +24,22 @@ export function FolhaShell({
   signedIn: boolean;
 }) {
   const pathname = usePathname();
-  const desk = pathname.startsWith("/folha/cedsif") || pathname.startsWith("/folha/auditor");
-  const hideTabs =
-    pathname.startsWith("/folha/painel") ||
-    /\/folha\/chefe\/sorteio\/[^/]+/.test(pathname) ||
-    desk;
+  const desk =
+    pathname.startsWith("/folha/cedsif") ||
+    pathname.startsWith("/folha/auditor") ||
+    pathname.startsWith("/folha/painel");
+  const hideTabs = /\/folha\/chefe\/sorteio\/[^/]+/.test(pathname);
+
+  if (desk) {
+    return (
+      <div className="flex min-h-screen bg-background text-foreground">
+        <FolhaDeskSidebar />
+        <main className="min-w-0 flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 [&>:not([data-slot=page-header-bar])]:mx-auto [&>:not([data-slot=page-header-bar])]:w-full [&>:not([data-slot=page-header-bar])]:max-w-4xl">
+          {children}
+        </main>
+      </div>
+    );
+  }
   const tabs = role === "chief" ? chiefTabs : [
     { href: role === "auditor" ? "/folha/auditor" : role === "cedsif" ? "/folha/cedsif" : "/folha/funcionario", label: "Início", icon: CheckCircle, match: () => true },
     { href: "/folha/perfil", label: "Perfil", icon: User, match: (path: string) => path.startsWith("/folha/perfil") },

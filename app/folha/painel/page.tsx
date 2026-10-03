@@ -1,45 +1,67 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
-import { List, ListItem, ListItemDescription, ListItemEnd, ListItemStart, ListItemTitle } from "@/components/ui/list";
+import { PageHeader } from "@/components/ui/page-header";
 import { getPublicPanel } from "@/features/folha/queries";
 
 export default async function PainelPage() {
   const panel = await getPublicPanel();
   if (!panel.cycle) {
-    return <EmptyState title="Painel ainda sem dados" description="Quando o ciclo mensal existir, os distritos aparecem aqui." />;
+    return (
+      <>
+        <PageHeader title="Painel" />
+        <div className="px-6 pb-16 pt-6">
+          <EmptyState title="Painel ainda sem dados" description="Quando o ciclo mensal existir, os distritos aparecem aqui." />
+        </div>
+      </>
+    );
   }
 
   return (
-    <div className="space-y-8 px-5 pt-6">
-      <div>
-        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">Raiz Merkle · dados fictícios</p>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight">Painel público</h1>
-        <p className="mt-2 text-muted-foreground">Ciclo {panel.cycle.yearMonth}. Números por distrito, sem meta de processos.</p>
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Indicadores</CardTitle>
-          <CardDescription>Folha com dono, verificada, atestação no prazo e discrepâncias.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <List>
+    <>
+      <PageHeader title="Painel" />
+      <div className="flex flex-col gap-8 px-6 pb-16 pt-6">
+        <section className="space-y-2">
+          <h2 className="text-lg font-medium">Ciclo {panel.cycle.yearMonth}</h2>
+          <p className="max-w-2xl leading-7 text-muted-foreground">
+            Números por distrito, sem meta de processos. Dados fictícios.
+          </p>
+        </section>
+        <section className="space-y-5 border-t pt-6">
+          <div className="space-y-1">
+            <h2 className="text-lg font-medium">Distritos</h2>
+            <p className="text-muted-foreground">Folha com dono, verificada, atestação no prazo e discrepâncias.</p>
+          </div>
+          <ul className="divide-y divide-border">
             {panel.districts.map((row) => (
-              <ListItem className="cursor-default border-b border-border last:border-0" key={row.district}>
-                <ListItemStart>
-                  <ListItemTitle>{row.district}</ListItemTitle>
-                  <ListItemDescription>
-                    {row.staff} salários · {row.unitCount} unidades · atestação {row.attestedOnTime}%
-                  </ListItemDescription>
-                </ListItemStart>
-                <ListItemEnd>
-                  <span className="text-sm font-medium">{row.owned}% dono</span>
-                  <span className="text-xs text-muted-foreground">{row.verified}% verificada · {row.discrepancies} discrep.</span>
-                </ListItemEnd>
-              </ListItem>
+              <li className="flex flex-wrap items-center justify-between gap-4 py-4" key={row.district}>
+                <div>
+                  <p className="font-medium">{row.district}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {row.staff} salários · {row.unitCount} unidades
+                  </p>
+                </div>
+                <dl className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-4">
+                  <div>
+                    <dt className="text-muted-foreground">Com dono</dt>
+                    <dd className="font-medium">{row.owned}%</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Verificada</dt>
+                    <dd className="font-medium">{row.verified}%</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Atestação</dt>
+                    <dd className="font-medium">{row.attestedOnTime}%</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Discrepâncias</dt>
+                    <dd className="font-medium">{row.discrepancies}</dd>
+                  </div>
+                </dl>
+              </li>
             ))}
-          </List>
-        </CardContent>
-      </Card>
-    </div>
+          </ul>
+        </section>
+      </div>
+    </>
   );
 }

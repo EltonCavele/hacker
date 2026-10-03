@@ -7,14 +7,6 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogBody,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { List, ListIcon, ListItem, ListItemDescription, ListItemEnd, ListItemStart, ListItemTitle } from "@/components/ui/list";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -189,34 +181,30 @@ export function AttestationRoster({
         })}
       </List>
 
-      <Dialog onOpenChange={(open) => !open && setSelected(null)} open={Boolean(selected)}>
-        <DialogContent showCloseButton size="sm">
-          {selected ? (
-            <>
-              <DialogHeader>
-                <DialogTitle>{selected.name}</DialogTitle>
-                <DialogDescription>NUIT {selected.nuit} · cada marcação é assinada.</DialogDescription>
-              </DialogHeader>
-              <DialogBody>
-                <RadioGroup
-                  disabled={pending}
-                  onValueChange={(value) => saveMark(selected.id, value)}
-                  value={markFor(selected.id) || undefined}
-                >
-                  {MARK_OPTIONS.map((option) => (
-                    <div className="flex items-center gap-3 rounded-full px-3 py-2 has-data-checked:bg-primary has-data-checked:text-primary-foreground" key={option.value}>
-                      <RadioGroupItem id={`mark-${option.value}`} value={option.value} />
-                      <Label className="flex-1 py-1" htmlFor={`mark-${option.value}`}>
-                        {option.label}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </DialogBody>
-            </>
-          ) : null}
-        </DialogContent>
-      </Dialog>
+      {selected ? (
+        <div className="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-md">
+          <button className="absolute inset-x-0 bottom-0 top-[-100vh] bg-foreground/20" onClick={() => setSelected(null)} type="button" />
+          <div className="relative rounded-t-3xl bg-card p-5 pb-8 shadow-lg">
+            <p className="text-lg font-semibold">{selected.name}</p>
+            <p className="text-sm text-muted-foreground">NUIT {selected.nuit} · cada marcação é assinada.</p>
+            <RadioGroup
+              className="mt-4"
+              disabled={pending}
+              onValueChange={(value) => saveMark(selected.id, value)}
+              value={markFor(selected.id) || undefined}
+            >
+              {MARK_OPTIONS.map((option) => (
+                <div className="flex items-center gap-3 rounded-full px-3 py-2 has-data-checked:bg-primary has-data-checked:text-primary-foreground" key={option.value}>
+                  <RadioGroupItem id={`mark-${option.value}`} value={option.value} />
+                  <Label className="flex-1 py-1" htmlFor={`mark-${option.value}`}>
+                    {option.label}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -237,7 +225,7 @@ export function DrawList({
       <p className="mt-2 text-sm text-muted-foreground">Fotografe cada uma no posto de trabalho até dia 10.</p>
       <List className="mt-6">
         {draws.map((draw) => (
-          <ListItem className="rounded-2xl bg-card px-3" key={draw.id}>
+          <ListItem className="cursor-default rounded-2xl bg-card px-3 hover:text-foreground" key={draw.id}>
             <ListIcon>
               <Avatar>
                 <AvatarFallback>{initials(draw.employeeName)}</AvatarFallback>
