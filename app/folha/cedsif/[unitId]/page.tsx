@@ -1,6 +1,7 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AcceptAdmissionButton, OpenCaseButton, WarnButton } from "@/features/folha/components/folha-actions";
 import { FolhaBadge } from "@/features/folha/components/folha-badge";
 import { directionIdFor, directionUnitsFrom, summarizeDirections } from "@/features/folha/directions";
@@ -94,75 +95,74 @@ export default async function CedsifDirectionPage({ params }: { params: Promise<
           </dl>
         </section>
 
-        <section className="space-y-5 border-t pt-6">
-          <div className="space-y-1">
-            <h2 className="text-lg font-medium">Segue para pagamento</h2>
-            <p className="text-muted-foreground">O CEDSIF pode processar estes salários.</p>
-          </div>
-          {paying.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Ninguém desta direcção segue neste ciclo.</p>
-          ) : (
-            <div className="space-y-6">
-              {[...byUnit.entries()]
-                .sort(([left], [right]) => left.localeCompare(right, "pt"))
-                .map(([unit, people]) => (
-                  <div key={unit}>
-                    {byUnit.size > 1 ? <h3 className="font-medium">{unit}</h3> : null}
-                    <ul className="divide-y divide-border">
-                      {people.map((row) => (
-                        <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={row.employee.id}>
-                          <p className="font-medium">{row.employee.name}</p>
-                          <div className="flex flex-wrap items-center gap-2">
-                            {row.payment.reason === "clean" || row.payment.reason === "chiefDidNotAttest" ? null : (
-                              <FolhaBadge value={row.payment.reason} />
-                            )}
-                            <span className="text-sm tabular-nums text-muted-foreground">{formatMzn(row.employee.salaryMzn)}</span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-            </div>
-          )}
-        </section>
-
-        <section className="space-y-5 border-t pt-6">
-          <div className="space-y-1">
-            <h2 className="text-lg font-medium">Fica de fora</h2>
-            <p className="text-muted-foreground">Não saem neste ciclo.</p>
-          </div>
-          {held.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Ninguém ficou retido.</p>
-          ) : (
-            <ul className="divide-y divide-border">
-              {held.map((row) => {
-                const highRisk = row.anomalies.find((alert) => alert.risk === "HIGH");
-                return (
-                  <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={row.employee.id}>
-                    <div className="min-w-0">
-                      <p className="font-medium">{row.employee.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {row.employee.unit?.name ?? "Sem unidade"}
-                        {unclaimedIds.has(row.employee.id) ? " · há mais de 60 dias" : ""} · {formatMzn(row.employee.salaryMzn)}
-                      </p>
+        <Tabs defaultValue="paying">
+          <TabsList className="w-full">
+            <TabsTrigger value="paying">Segue para pagamento</TabsTrigger>
+            <TabsTrigger value="held">Fica de fora</TabsTrigger>
+          </TabsList>
+          <TabsContent className="text-base" value="paying">
+            <p className="py-4 text-muted-foreground">O CEDSIF pode processar estes salários.</p>
+            {paying.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Ninguém desta direcção segue neste ciclo.</p>
+            ) : (
+              <div className="space-y-6">
+                {[...byUnit.entries()]
+                  .sort(([left], [right]) => left.localeCompare(right, "pt"))
+                  .map(([unit, people]) => (
+                    <div key={unit}>
+                      {byUnit.size > 1 ? <h3 className="font-medium">{unit}</h3> : null}
+                      <ul className="divide-y divide-border">
+                        {people.map((row) => (
+                          <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={row.employee.id}>
+                            <p className="font-medium">{row.employee.name}</p>
+                            <div className="flex flex-wrap items-center gap-2">
+                              {row.payment.reason === "clean" || row.payment.reason === "chiefDidNotAttest" ? null : (
+                                <FolhaBadge value={row.payment.reason} />
+                              )}
+                              <span className="text-sm tabular-nums text-muted-foreground">{formatMzn(row.employee.salaryMzn)}</span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <FolhaBadge value={row.payment.reason} />
-                      {row.employee.status === "ADMISSION_PENDING" ? <AcceptAdmissionButton employeeId={row.employee.id} /> : null}
-                      {row.attestation && isNegativeMark(row.attestation.mark) && !row.attestation.warnedAt ? (
-                        <WarnButton attestationId={row.attestation.id} />
-                      ) : null}
-                      {highRisk && !openCases.has(row.employee.id) ? (
-                        <OpenCaseButton detail={highRisk.detail} employeeId={row.employee.id} />
-                      ) : null}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
+                  ))}
+              </div>
+            )}
+          </TabsContent>
+          <TabsContent className="text-base" value="held">
+            <p className="py-4 text-muted-foreground">Não saem neste ciclo.</p>
+            {held.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Ninguém ficou retido.</p>
+            ) : (
+              <ul className="divide-y divide-border">
+                {held.map((row) => {
+                  const highRisk = row.anomalies.find((alert) => alert.risk === "HIGH");
+                  return (
+                    <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={row.employee.id}>
+                      <div className="min-w-0">
+                        <p className="font-medium">{row.employee.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {row.employee.unit?.name ?? "Sem unidade"}
+                          {unclaimedIds.has(row.employee.id) ? " · há mais de 60 dias" : ""} · {formatMzn(row.employee.salaryMzn)}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <FolhaBadge value={row.payment.reason} />
+                        {row.employee.status === "ADMISSION_PENDING" ? <AcceptAdmissionButton employeeId={row.employee.id} /> : null}
+                        {row.attestation && isNegativeMark(row.attestation.mark) && !row.attestation.warnedAt ? (
+                          <WarnButton attestationId={row.attestation.id} />
+                        ) : null}
+                        {highRisk && !openCases.has(row.employee.id) ? (
+                          <OpenCaseButton detail={highRisk.detail} employeeId={row.employee.id} />
+                        ) : null}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </>
   );

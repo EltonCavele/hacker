@@ -1,8 +1,8 @@
+import Link from "next/link";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
-import { AuditButtons } from "@/features/folha/components/audit-buttons";
-import { FolhaBadge } from "@/features/folha/components/folha-badge";
-import { ResolveContestButtons } from "@/features/folha/components/folha-actions";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { directionUnitsFrom, summarizeAuditDirections } from "@/features/folha/directions";
 import { getActiveCycle, getAuditQueue } from "@/features/folha/queries";
 import { prisma } from "@/lib/db/client";
 
@@ -18,88 +18,87 @@ export default async function AuditorPage() {
       </>
     );
   }
-  const { units, riskyUnitIds, audits, attestByEmployee } = await getAuditQueue(cycle.id);
+
+  const { units, riskyUnitIds, audits } = await getAuditQueue(cycle.id);
   const contests = await prisma.folhaContest.findMany({
-    where: { cycleId: cycle.id },
-    include: { employee: true },
-    orderBy: { createdAt: "desc" },
+    where: { cycleId: cycle.id, status: "OPEN" },
+    select: { employeeId: true },
   });
-  const priority = units.filter((unit) => riskyUnitIds.has(unit.id) || unit.conflictZone);
+  const openContestIds = new Set(contests.map((contest) => contest.employeeId));
+  const visitedIds = new Set(audits.map((audit) => audit.employeeId));
+  const discrepancyIds = new Set(
+    audits.filter((audit) => audit.attestedAs === "PRESENT" && !audit.foundPresent).map((audit) => audit.employeeId),
+  );
+  const directions = summarizeAuditDirections(
+    directionUnitsFrom(units),
+    units.flatMap((unit) =>
+      unit.employees.map((employee) => ({
+        unitId: unit.id,
+        visited: visitedIds.has(employee.id),
+        discrepancy: discrepancyIds.has(employee.id),
+        atRisk: riskyUnitIds.has(unit.id) || unit.conflictZone,
+        openContest: openContestIds.has(employee.id),
+      })),
+    ),
+  );
 
   return (
     <>
       <PageHeader title="Auditoria" />
       <div className="flex flex-col gap-8 px-6 pb-16 pt-6">
         <section className="space-y-2">
-          <h2 className="text-lg font-medium">Amostra sem aviso</h2>
+          <h2 className="text-lg font-medium">Ciclo {cycle.yearMonth}</h2>
           <p className="max-w-2xl leading-7 text-muted-foreground">
-            Ciclo {cycle.yearMonth}. Visitas às unidades de risco. A diferença com a atestação do chefe é o indicador do distrito.
+            Uma tabela por direcção. Abre a direcção para ver cada pessoa, a atestação do chefe e a visita.
           </p>
         </section>
 
         <section className="space-y-5 border-t pt-6">
           <div className="space-y-1">
-            <h2 className="text-lg font-medium">Fila deste trimestre</h2>
-            <p className="text-muted-foreground">Unidades com alerta alto, conflito ou ainda sem visita.</p>
+            <h2 className="text-lg font-medium">Direcções</h2>
+            <p className="text-muted-foreground">Escolas e postos entram na direcção a que pertencem.</p>
           </div>
-          {priority.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma unidade na fila.</p>
+          {directions.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Nenhuma direcção neste ciclo.</p>
           ) : (
-            <div className="space-y-8">
-              {priority.map((unit) => (
-                <div key={unit.id}>
-                  <h3 className="font-medium">{unit.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {unit.district}, {unit.province}
-                    {unit.chief ? ` · Chefe ${unit.chief.name}` : " · sem chefe"}
-                  </p>
-                  <ul className="mt-2 divide-y divide-border">
-                    {unit.employees.map((employee) => {
-                      const attested = attestByEmployee.get(employee.id);
-                      const visit = audits.find((audit) => audit.employeeId === employee.id);
-                      return (
-                        <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={employee.id}>
-                          <div className="min-w-0">
-                            <p className="font-medium">{employee.name}</p>
-                            <p className="text-sm text-muted-foreground">{attested ? "Atestado pelo chefe" : "Ainda sem atestação"}</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {attested ? <FolhaBadge value={attested.mark} /> : null}
-                            {visit ? (
-                              <span className="text-sm text-muted-foreground">{visit.foundPresent ? "Encontrado" : "Ausente"}</span>
-                            ) : (
-                              <AuditButtons employeeId={employee.id} unitId={unit.id} />
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <section className="space-y-5 border-t pt-6">
-          <div className="space-y-1">
-            <h2 className="text-lg font-medium">Contestações</h2>
-            <p className="text-muted-foreground">Uma marcação negativa só corta depois de verificação independente.</p>
-          </div>
-          {contests.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Não há contestações neste ciclo.</p>
-          ) : (
-            <ul className="divide-y divide-border">
-              {contests.map((contest) => (
-                <li className="flex flex-wrap items-center justify-between gap-3 py-4" key={contest.id}>
-                  <div className="min-w-0 max-w-xl">
-                    <p className="font-medium">{contest.employee.name}</p>
-                    <p className="text-sm leading-6 text-muted-foreground">{contest.reason}</p>
-                  </div>
-                  {contest.status === "OPEN" ? <ResolveContestButtons contestId={contest.id} /> : <FolhaBadge value={contest.status} />}
-                </li>
-              ))}
-            </ul>
+            <Table aria-label="Direcções para auditar">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Direcção</TableHead>
+                  <TableHead mobileHidden>Município</TableHead>
+                  <TableHead className="text-right">Unidades</TableHead>
+                  <TableHead className="text-right">Pessoas</TableHead>
+                  <TableHead className="text-right" mobileHidden>
+                    Visitadas
+                  </TableHead>
+                  <TableHead className="text-right">Discrepâncias</TableHead>
+                  <TableHead className="text-right" mobileHidden>
+                    Contestações
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {directions.map((direction) => (
+                  <TableRow className="relative" key={direction.id}>
+                    <TableCell className="font-medium">
+                      <Link className="after:absolute after:inset-0" href={`/folha/auditor/${direction.id}`}>
+                        {direction.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell mobileHidden>{direction.district ?? "—"}</TableCell>
+                    <TableCell className="text-right tabular-nums">{direction.unitIds.length}</TableCell>
+                    <TableCell className="text-right tabular-nums">{direction.staff}</TableCell>
+                    <TableCell className="text-right tabular-nums" mobileHidden>
+                      {direction.visited}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">{direction.discrepancies}</TableCell>
+                    <TableCell className="text-right tabular-nums" mobileHidden>
+                      {direction.openContests}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </section>
       </div>

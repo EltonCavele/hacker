@@ -34,7 +34,7 @@ export function FolhaShell({
     return (
       <div className="flex min-h-screen bg-background text-foreground">
         <FolhaDeskSidebar />
-        <main className="min-w-0 flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 [&>:not([data-slot=page-header-bar])]:mx-auto [&>:not([data-slot=page-header-bar])]:w-full [&>:not([data-slot=page-header-bar])]:max-w-4xl">
+        <main className="min-w-0 flex-1 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
           {children}
         </main>
       </div>
