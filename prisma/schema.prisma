@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  passkeyPromptedAt DateTime?
+  onboardedAt   DateTime?
+  accounts      Account[]
+  passkeys      Passkey[]
+  pushSubscriptions PushSubscription[]
+  tasks         Task[]
+  sentMessages  Message[]
+  paymentPurchases PaymentPurchase[]
+  paymentSubscriptions PaymentSubscription[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Passkey {
+  id           String    @id
+  name         String?
+  publicKey    String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialID String
+  counter      Int
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  createdAt    DateTime? @default(now())
+  aaguid       String?
+
+  @@index([userId])
+  @@index([credentialID])
+  @@map("passkey")
+}
+
+model PushSubscription {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint   String    @unique
+  p256dh     String
+  auth       String
+  userAgent  String?
+  revokedAt  DateTime?
+  lastSeenAt DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId, revokedAt])
+  @@map("push_subscription")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Task {
+  id        String   @id @default(uuid()) @db.Uuid
+  ownerId   String
+  title     String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  owner     User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId, createdAt])
+  @@map("tasks")
+}
+
+model Conversation {
+  id                    String    @id @default(uuid()) @db.Uuid
+  channel               String
+  channelAccountId      String
+  externalContactId     String
+  lastMessageAt         DateTime? @db.Timestamptz(6)
+  createdAt             DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime  @updatedAt @db.Timestamptz(6)
+  messages              Message[]
+
+  @@unique([channel, channelAccountId, externalContactId])
+  @@index([channel, lastMessageAt])
+  @@map("conversations")
+}
+
+model Message {
+  id                String       @id @default(uuid()) @db.Uuid
+  channel           String
+  externalId        String
+  direction         String
+  contentType       String
+  text              String?
+  payload           Json?
+  status            String
+  statusUpdatedAt   DateTime?    @db.Timestamptz(6)
+  failureReason     String?
+  occurredAt        DateTime     @db.Timestamptz(6)
+  createdAt         DateTime     @default(now()) @db.Timestamptz(6)
+  conversationId    String       @db.Uuid
+  conversation      Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sentByUserId      String?
+  sentByUser        User?        @relation(fields: [sentByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([channel, externalId])
+  @@index([conversationId, occurredAt])
+  @@index([sentByUserId])
+  @@map("messages")
+}
+
+enum PaymentProvider {
+  EPAY
+  DODO
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentSubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  ON_HOLD
+  EXPIRED
+}
+
+model PaymentPurchase {
+  id                   String         @id @default(uuid()) @db.Uuid
+  userId               String
+  productId            String         @map("product_id")
+  provider             PaymentProvider
+  status               PaymentStatus  @default(PENDING)
+  currency             String         @db.VarChar(3)
+  amountMinor          Int            @map("amount_minor")
+  providerCheckoutId   String?        @unique @map("provider_checkout_id")
+  providerPaymentId    String?        @unique @map("provider_payment_id")
+  providerSubscriptionId String?      @map("provider_subscription_id")
+  checkoutUrl          String?        @map("checkout_url")
+  expiresAt            DateTime?      @map("expires_at") @db.Timestamptz(6)
+  paidAt               DateTime?      @map("paid_at") @db.Timestamptz(6)
+  createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user                 User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([provider, status, createdAt])
+  @@map("payment_purchases")
+}
+
+model PaymentProviderEvent {
+  id          String         @id @default(uuid()) @db.Uuid
+  provider    PaymentProvider
+  eventId     String         @unique @map("event_id")
+  eventType   String         @map("event_type")
+  processedAt DateTime       @default(now()) @map("processed_at") @db.Timestamptz(6)
+  metadata    Json?
+
+  @@map("payment_provider_events")
+}
+
+model PaymentSubscription {
+  id                     String                     @id @default(uuid()) @db.Uuid
+  userId                 String                     @map("user_id")
+  productId              String                     @map("product_id")
+  provider               PaymentProvider
+  providerSubscriptionId String                     @unique @map("provider_subscription_id")
+  providerCustomerId     String?                    @map("provider_customer_id")
+  status                 PaymentSubscriptionStatus  @default(ACTIVE)
+  currency               String                     @db.VarChar(3)
+  amountMinor            Int                        @map("amount_minor")
+  currentPeriodStart     DateTime?                  @map("current_period_start") @db.Timestamptz(6)
+  currentPeriodEnd       DateTime?                  @map("current_period_end") @db.Timestamptz(6)
+  cancelAtPeriodEnd      Boolean                    @default(false) @map("cancel_at_period_end")
+  createdAt              DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime                   @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user                   User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("payment_subscriptions")
+}
+
+// Transactional outbox: written in the same transaction as the business change, then relayed to BullMQ by the worker.
+model OutboxEvent {
+  id          String    @id @default(uuid()) @db.Uuid
+  queue       String
+  name        String
+  payload     Json
+  attempts    Int       @default(0)
+  lastError   String?   @map("last_error")
+  availableAt DateTime  @default(now()) @map("available_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  processedAt DateTime? @map("processed_at") @db.Timestamptz(6)
+
+  @@index([processedAt, availableAt])
+  @@map("outbox_events")
+}

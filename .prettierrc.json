@@ -1,0 +1,7 @@
+{
+  "semi": true,
+  "singleQuote": false,
+  "printWidth": 120,
+  "trailingComma": "all",
+  "overrides": [{ "files": "components/ui/**", "options": { "semi": false, "trailingComma": "es5" } }]
+}

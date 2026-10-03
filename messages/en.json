@@ -1,0 +1,341 @@
+{
+  "meta": {
+    "description": "Full-stack boilerplate with Better Auth, PostgreSQL and Redis."
+  },
+  "common": {
+    "back": "Back",
+    "continue": "Continue",
+    "backHome": "Back to home",
+    "signOut": "Sign out",
+    "close": "Close",
+    "scrollReturn": "Back to where you were",
+    "scrollTop": "Back to top",
+    "loading": "Loading"
+  },
+  "home": {
+    "title": "A solid foundation for your next application.",
+    "subtitle": "App Router, Better Auth, PostgreSQL, Prisma ORM and Redis with BullMQ.",
+    "signIn": "Sign in",
+    "openDashboard": "Open dashboard"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The address you opened does not exist or has been moved."
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An unexpected error occurred. You can try again; if the problem persists, contact support.",
+    "reference": "Reference: {digest}",
+    "retry": "Try again"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome",
+      "subtitle": "Sign in or create your account to get started.",
+      "or": "or",
+      "google": "Continue with Google",
+      "passkey": "Sign in with passkey",
+      "passkeyError": "Could not sign in with a passkey. Use Google if you have not registered one yet."
+    },
+    "otp": {
+      "email": "Email",
+      "emailPlaceholder": "name@example.com",
+      "sendError": "Could not send the code. Please try again.",
+      "invalid": "Invalid or expired code.",
+      "title": "We sent you a verification code",
+      "sentTo": "Enter the code we sent to <strong>{email}</strong> below.",
+      "codeLabel": "Verification code",
+      "noCode": "Did not get the code?",
+      "resend": "Resend",
+      "resent": "New code sent."
+    },
+    "onboarding": {
+      "title": "Let's get started",
+      "subtitle": "We just need to know what to call you.",
+      "name": "Full name",
+      "namePlaceholder": "Jane Smith",
+      "nameRequired": "Enter your full name.",
+      "nameInvalid": "Invalid name."
+    },
+    "passkeyOffer": {
+      "title": "Sign in faster with a passkey",
+      "subtitle": "Use your fingerprint, face or device PIN to sign in.",
+      "register": "Register",
+      "notNow": "Not now",
+      "createError": "Could not create the passkey.",
+      "created": "Passkey created."
+    },
+    "passkeySettings": {
+      "label": "Sign in with passkey",
+      "count": "{count, plural, one {# passkey registered.} other {# passkeys registered.}}",
+      "none": "No passkey registered.",
+      "createError": "Could not create the passkey.",
+      "enabled": "Passkey enabled.",
+      "disableError": "Could not disable the passkey.",
+      "removeError": "Could not remove all passkeys.",
+      "disabled": "Passkey disabled."
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "home": "Home",
+      "payments": "Payments",
+      "notifications": "Notifications",
+      "saved": "Saved",
+      "favorites": "Favorites",
+      "account": "Account",
+      "accountMenu": "Account menu",
+      "menu": "Menu",
+      "profile": "Profile",
+      "settings": "Settings"
+    },
+    "accountMenu": {
+      "profileDescription": "Your account details",
+      "settingsDescription": "Appearance, language and security"
+    },
+    "home": {
+      "nextStepTitle": "Next step",
+      "nextStep": "Create a feature in <code>features/</code>, put protected queries in the DAL and use Server Actions for mutations."
+    },
+    "profile": {
+      "edit": "Edit",
+      "accountTitle": "Account",
+      "accountDescription": "Provided by your sign-in provider.",
+      "emailVerified": "Email verified",
+      "emailUnverified": "Email not verified",
+      "editTitle": "Edit profile",
+      "personalData": "Personal details",
+      "emailLocked": "Your email comes from your sign-in provider and cannot be changed.",
+      "name": "Name",
+      "email": "Email",
+      "save": "Save",
+      "saveError": "Could not save the profile.",
+      "saved": "Profile updated."
+    },
+    "settings": {
+      "appearance": "Appearance",
+      "appearanceDescription": "Switch between light and dark theme.",
+      "theme": "Theme",
+      "toggleTheme": "Toggle theme",
+      "language": "Language",
+      "languageDescription": "Language of the application.",
+      "languageLabel": "Application language",
+      "notifications": "Notifications",
+      "notificationsDescription": "Push alerts on this device.",
+      "security": "Security",
+      "securityDescription": "Sign in with your fingerprint, face or device PIN.",
+      "deleteAccount": {
+        "title": "Delete account",
+        "description": "Permanently delete your account and everything linked to it.",
+        "warning": "This cannot be undone. Your profile, tasks, passkeys, notification subscriptions, payment history and uploaded files are deleted.",
+        "button": "Delete account",
+        "dialogTitle": "Delete your account?",
+        "dialogDescription": "All your data will be permanently deleted and you will be signed out. This cannot be undone.",
+        "confirmLabel": "Type {email} to confirm",
+        "cancel": "Cancel",
+        "confirm": "Delete permanently",
+        "success": "Your account was deleted.",
+        "goToPayments": "Manage subscriptions",
+        "errors": {
+          "sessionExpired": "For your security, sign out, sign in again and retry right away.",
+          "activeSubscription": "You have an active subscription. Cancel it before deleting your account.",
+          "generic": "We could not delete your account. Try again."
+        }
+      }
+    }
+  },
+  "push": {
+    "title": "Push notifications",
+    "checking": "Checking…",
+    "unsupported": "This browser does not support push notifications.",
+    "install": "On iPhone/iPad, add the app to your home screen (Share → Add to Home Screen) to enable them.",
+    "denied": "Blocked in the browser. Allow notifications in the site settings to enable them.",
+    "on": "Enabled on this device.",
+    "off": "Get alerts even when the app is closed.",
+    "disabledToast": "Notifications disabled on this device.",
+    "enabledToast": "Notifications enabled.",
+    "enableError": "Could not enable notifications.",
+    "sendTest": "Send test notification",
+    "testSent": "Test notification sent.",
+    "testError": "Could not send the test.",
+    "testBody": "Notifications are working."
+  },
+  "tasks": {
+    "title": "Sample tasks",
+    "description": "This flow demonstrates PostgreSQL, the DAL, Redis cache, Server Actions and BullMQ.",
+    "newTask": "New task",
+    "placeholder": "Add a task",
+    "add": "Add",
+    "empty": "No tasks yet.",
+    "remove": "Remove"
+  },
+  "payments": {
+    "title": "Payments",
+    "status": {
+      "succeeded": "Payment confirmed.",
+      "failed": "The payment was not completed.",
+      "cancelled": "Checkout was cancelled.",
+      "pending": "Waiting for secure confirmation from the provider…"
+    },
+    "opening": "Opening…",
+    "continue": "Continue to payment",
+    "noProducts": "No payment products are configured yet. Set PAYMENT_CATALOG in the environment to enable checkout.",
+    "subscriptions": "Subscriptions",
+    "until": "Until {date}",
+    "cancelling": "Cancelling…",
+    "cancelAtPeriodEnd": "Cancel at period end",
+    "cancelScheduled": "Cancellation scheduled",
+    "history": "Payment history",
+    "checkoutError": "Could not start checkout. Please try again.",
+    "cancelError": "Could not cancel the subscription."
+  },
+  "email": {
+    "otp": {
+      "subject": "{code} is your verification code",
+      "heading": "Verification code",
+      "body": "This code expires in {minutes} minutes and can only be used once. For your security, do not share it with anyone.",
+      "footer": "If you think this was a mistake, contact support."
+    }
+  },
+  "legal": {
+    "back": "Back",
+    "lastUpdated": "Last updated: {date}",
+    "notice": "This is a starting-point template, not legal advice. Have a lawyer review it and adapt it to your service before launch.",
+    "footer": {
+      "terms": "Terms",
+      "privacy": "Privacy"
+    },
+    "acceptance": "By continuing you agree to the <terms>Terms and Conditions</terms> and the <privacy>Privacy Policy</privacy>.",
+    "terms": {
+      "title": "Terms and Conditions",
+      "description": "The rules for using this service.",
+      "intro": "These Terms govern your use of {company} (the \"Service\"). By creating an account or using the Service you agree to them. If you do not agree, do not use the Service.",
+      "sections": [
+        {
+          "title": "1. Your account",
+          "body": [
+            "You must provide accurate information and keep your sign-in methods (email, passkeys, Google) secure. You are responsible for activity under your account. Tell us at {email} if you suspect unauthorised access.",
+            "You must be old enough to enter a binding contract in your country, and at least 16 years old."
+          ]
+        },
+        {
+          "title": "2. Acceptable use",
+          "body": [
+            "Do not use the Service to break the law, infringe others' rights, send spam or malware, probe or disrupt the Service, or bypass rate limits and security measures.",
+            "You may only upload files you have the right to share. We may remove content or suspend accounts that breach these Terms."
+          ]
+        },
+        {
+          "title": "3. Your content",
+          "body": [
+            "You keep ownership of what you upload or create. You grant us a limited licence to host, process and display it solely to operate the Service for you."
+          ]
+        },
+        {
+          "title": "4. Payments and subscriptions",
+          "body": [
+            "Paid features are charged through our payment providers at the price shown at checkout. Subscriptions renew until cancelled; you can cancel at any time and keep access until the end of the paid period. Refunds follow the law of your country and any policy shown at checkout.",
+            "We do not store your card details; they are handled by the payment provider."
+          ]
+        },
+        {
+          "title": "5. Availability and changes",
+          "body": [
+            "We work to keep the Service available but do not guarantee uninterrupted operation. We may change or discontinue features, and will give reasonable notice of changes that significantly affect you."
+          ]
+        },
+        {
+          "title": "6. Termination",
+          "body": [
+            "You can delete your account at any time in Settings. We may suspend or close accounts that breach these Terms. On deletion your data is removed as described in the Privacy Policy."
+          ]
+        },
+        {
+          "title": "7. Disclaimers and liability",
+          "body": [
+            "The Service is provided \"as is\". To the extent permitted by law, we are not liable for indirect or consequential losses, and our total liability is limited to the amount you paid us in the 12 months before the claim. Nothing limits liability that cannot be limited by law."
+          ]
+        },
+        {
+          "title": "8. Changes to these Terms",
+          "body": [
+            "We may update these Terms. We will post the new version here and, for material changes, notify you. Continuing to use the Service after the change means you accept it."
+          ]
+        },
+        {
+          "title": "9. Governing law and contact",
+          "body": [
+            "These Terms are governed by the law of the country where {company} is established, and its courts have jurisdiction, without prejudice to mandatory consumer rights. Questions: {email}."
+          ]
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "What data we collect, why, and your rights.",
+      "intro": "{company} (\"we\") respects your privacy. This policy explains what personal data the Service processes, why, and what you can do about it.",
+      "sections": [
+        {
+          "title": "1. Data we collect",
+          "body": [
+            "Account data: name, email address, profile picture (if you sign in with Google), and sign-in credentials such as passkey public keys. Sessions: a session token, IP address and browser/device description.",
+            "Content and activity: tasks, uploaded files, messages exchanged through connected channels (such as WhatsApp) and payment records (product, amount, status, provider references; never full card numbers).",
+            "Device data: push notification subscriptions you enable, and technical logs and error reports needed to run and secure the Service."
+          ]
+        },
+        {
+          "title": "2. Why we use it (legal bases)",
+          "body": [
+            "To provide the Service and perform our contract with you (account, sign-in, features, payments); to keep it secure and prevent abuse (legitimate interests); to send notifications you opted into (consent); and to comply with legal obligations such as accounting."
+          ]
+        },
+        {
+          "title": "3. Cookies and local storage",
+          "body": [
+            "We use only essential cookies and storage: the session cookie, your language (NEXT_LOCALE) and theme preferences, and a cookie that remembers you dismissed a prompt. We do not use advertising or cross-site tracking cookies, so no consent banner is needed. If you add analytics or marketing tools, update this section and ask for consent first."
+          ]
+        },
+        {
+          "title": "4. Who we share data with",
+          "body": [
+            "Service providers acting on our instructions: hosting and database, email delivery (e.g. Resend), payment processors (e.g. EPay, Dodo Payments), WhatsApp/Meta for messaging you use, object storage, error monitoring (e.g. Sentry) and Google if you choose Google sign-in. We do not sell personal data. We may disclose data when the law requires it."
+          ]
+        },
+        {
+          "title": "5. International transfers",
+          "body": [
+            "Some providers may process data outside your country or the EEA. Where required we rely on safeguards such as standard contractual clauses."
+          ]
+        },
+        {
+          "title": "6. Retention",
+          "body": [
+            "We keep account data while your account exists. Expired sessions and verification codes are deleted automatically; revoked push subscriptions after 30 days. When you delete your account, your profile, tasks, passkeys, subscriptions and uploaded files are deleted immediately. Backups are overwritten on their normal cycle. We may keep limited records required by law (for example tax or accounting records) for the legally required period."
+          ]
+        },
+        {
+          "title": "7. Your rights",
+          "body": [
+            "Depending on where you live (for example under the GDPR or the Brazilian LGPD) you can access, correct, export, restrict or object to the use of your data, withdraw consent, and complain to your data protection authority. You can edit your profile and delete your account in Settings; for anything else write to {email}. We reply within one month."
+          ]
+        },
+        {
+          "title": "8. Security",
+          "body": [
+            "We use encryption in transit, hashed one-time codes, rate limiting, restricted access and a Content Security Policy. No system is perfectly secure; tell us at {email} if you find a vulnerability."
+          ]
+        },
+        {
+          "title": "9. Children",
+          "body": ["The Service is not directed to children under 16 and we do not knowingly collect their data."]
+        },
+        {
+          "title": "10. Changes and contact",
+          "body": [
+            "We will post updates on this page and, for material changes, notify you. Controller and contact: {company}, {email}."
+          ]
+        }
+      ]
+    }
+  }
+}

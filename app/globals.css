@@ -1,0 +1,346 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * Design tokens — see docs/design-system.md.
+ * Change colours/radius here (`:root` = light, `.dark` = dark); components never hard-code colours.
+ */
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --success: oklch(0.527 0.154 150);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: oklch(0.769 0.165 70);
+  --warning-foreground: oklch(0.26 0.05 70);
+  --info: oklch(0.546 0.2 262);
+  --info-foreground: oklch(0.985 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.215 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.255 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.255 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.215 0 0);
+  --secondary: oklch(0.31 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.31 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.31 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --success: oklch(0.696 0.17 150);
+  --success-foreground: oklch(0.2 0.05 150);
+  --warning: oklch(0.82 0.16 80);
+  --warning-foreground: oklch(0.26 0.05 70);
+  --info: oklch(0.707 0.165 254);
+  --info-foreground: oklch(0.2 0.05 254);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.31 0 0);
+  --sidebar: oklch(0.255 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.31 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+  html,
+  body {
+    /* A sideways swipe/scroll must never trigger the browser's "back" gesture (detail.design). */
+    overscroll-behavior-x: none;
+  }
+  /* Mobile only: iOS Safari zooms into inputs under 16px on focus and ignores user-scalable=no, so force 16px and block double-tap zoom. */
+  @media (max-width: 767px) {
+    html {
+      touch-action: manipulation;
+    }
+    input,
+    textarea,
+    select,
+    [contenteditable="true"] {
+      font-size: 16px !important;
+    }
+  }
+  /* Better line breaks: balanced headings, no one-word last lines in paragraphs. */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+  p,
+  li,
+  blockquote {
+    text-wrap: pretty;
+  }
+}
+
+/*
+ * text-adaptive — picks black or white text for the surface colour, no JS. Set the colour on the element
+ * as `--surface` (use it for the background too): `style={{ "--surface": color }} className="bg-(--surface) text-adaptive"`.
+ * Uses CSS relative colour syntax on OKLCH lightness; browsers without it fall back to the normal text colour.
+ */
+@utility text-adaptive {
+  color: var(--foreground);
+  @supports (color: oklch(from red l c h)) {
+    color: oklch(from var(--surface) clamp(0, (0.62 - l) * 1000, 1) 0 0);
+  }
+}
+
+/*
+ * Scrollbar — minimal, app-wide. A slim pill thumb on a transparent track that follows the theme
+ * (`--foreground` at low opacity, so it works in light and dark) and firms up on hover/drag.
+ * WebKit/Blink get the styled pseudo-elements; Firefox only supports the standard properties.
+ */
+html {
+  /* Always reserve the scrollbar gutter so the layout doesn't shift when scrolling appears/disappears. */
+  scrollbar-gutter: stable;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--foreground) 22%, transparent) transparent;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    /* 2px transparent border + content-box clip = a 6px pill floating inside the 10px gutter. */
+    background-color: color-mix(in oklab, var(--foreground) 18%, transparent);
+    background-clip: content-box;
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    transition: background-color 150ms;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklab, var(--foreground) 32%, transparent);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background-color: color-mix(in oklab, var(--foreground) 45%, transparent);
+  }
+}
+
+/*
+ * Glow surface — inner glass lighting for filled surfaces (ring, top rim light, frosted
+ * inner glow, soft bottom shade). Inset-only, so no halo leaks outside the element.
+ *
+ * Composed through `--tw-inset-shadow` so Tailwind `ring-*` / `shadow-*` utilities
+ * (e.g. the button focus ring) stack on top instead of being overridden.
+ *
+ *   glow-surface          → neutral/coloured surfaces: white frosted light in light mode,
+ *                           a top hairline + faint ring in dark mode (white frosted would
+ *                           muddy dark surfaces).
+ *   glow-surface-inverted → surfaces that invert with the theme (default/primary: near-black
+ *                           in light, near-white in dark). Light mode lights from
+ *                           `--background`; dark mode drops the frost (it would turn the
+ *                           white surface grey at the edges) for a crisp ring + soft shade.
+ */
+@utility glow-surface {
+  --tw-inset-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.15), inset 0 3px 3px -1px rgb(255 255 255 / 0.5),
+    inset 0 0 22px 0 rgb(255 255 255 / 0.35), inset 0 -4px 8px -7px rgb(0 0 0 / 0.12);
+  box-shadow:
+    var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+    var(--tw-shadow);
+
+  &:is(.dark *) {
+    --tw-inset-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.05), inset 0 1px 0 0 rgb(255 255 255 / 0.07);
+  }
+}
+
+@utility glow-surface-inverted {
+  --tw-inset-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--background) 15%, transparent),
+    inset 0 3px 3px -1px color-mix(in srgb, var(--background) 50%, transparent),
+    inset 0 0 22px 0 color-mix(in srgb, var(--background) 35%, transparent), inset 0 -7px 10px -6px rgb(0 0 0 / 0.25);
+  box-shadow:
+    var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+    var(--tw-shadow);
+
+  &:is(.dark *) {
+    --tw-inset-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.08), inset 0 -3px 5px -3px rgb(0 0 0 / 0.18);
+  }
+}
+
+/* Button `isAnimated` feedback — success pulse, error shake, status icon pop-in. */
+@keyframes button-success {
+  0% {
+    scale: 1;
+  }
+  35% {
+    scale: 1.04;
+  }
+  70% {
+    scale: 0.99;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+@keyframes button-error {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  25%,
+  75% {
+    translate: -4px 0;
+  }
+  50% {
+    translate: 4px 0;
+  }
+}
+
+@keyframes button-status-icon {
+  0% {
+    scale: 0.4;
+    opacity: 0;
+  }
+  100% {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+/* ScrollShadow fade lengths: registered so they transition (an unregistered custom property can't animate). */
+@property --shadow-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --shadow-bottom {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+html,
+body {
+  overscroll-behavior-y: none;
+  overscroll-behavior-x: none;
+}

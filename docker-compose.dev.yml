@@ -1,0 +1,26 @@
+# Dev override: hot reload com o código local montado no container.
+# Uso: npm run docker:dev (rápido). Após mudar dependências ou o schema Prisma: npm run docker:dev:build.
+x-dev-source: &dev-source
+  - .:/app
+  # Mantém node_modules/.next/generated do container (Linux), não os do host (macOS).
+  - /app/node_modules
+  - /app/.next
+  - /app/generated
+
+services:
+  app:
+    build:
+      context: .
+      target: dev
+    environment:
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+    volumes: *dev-source
+    healthcheck:
+      disable: true
+  worker:
+    build:
+      context: .
+      target: dev
+    command: ["npm", "run", "worker:dev"]
+    volumes: *dev-source

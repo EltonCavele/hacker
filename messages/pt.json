@@ -1,0 +1,341 @@
+{
+  "meta": {
+    "description": "Boilerplate full-stack com Better Auth, PostgreSQL e Redis."
+  },
+  "common": {
+    "back": "Voltar",
+    "continue": "Continuar",
+    "backHome": "Voltar ao início",
+    "signOut": "Terminar sessão",
+    "close": "Fechar",
+    "scrollReturn": "Voltar onde estavas",
+    "scrollTop": "Voltar ao topo",
+    "loading": "A carregar"
+  },
+  "home": {
+    "title": "Uma base sólida para a próxima aplicação.",
+    "subtitle": "App Router, Better Auth, PostgreSQL, Prisma ORM e Redis com BullMQ.",
+    "signIn": "Entrar",
+    "openDashboard": "Abrir dashboard"
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "description": "O endereço que abriu não existe ou foi movido."
+  },
+  "error": {
+    "title": "Algo correu mal",
+    "description": "Ocorreu um erro inesperado. Pode tentar novamente; se o problema continuar, contacte o suporte.",
+    "reference": "Referência: {digest}",
+    "retry": "Tentar novamente"
+  },
+  "auth": {
+    "login": {
+      "title": "Seja bem-vindo",
+      "subtitle": "Entre ou crie sua conta para começar.",
+      "or": "ou",
+      "google": "Continuar com Google",
+      "passkey": "Entrar com passkey",
+      "passkeyError": "Não foi possível entrar com passkey. Usa o Google se ainda não registaste uma."
+    },
+    "otp": {
+      "email": "E-mail",
+      "emailPlaceholder": "nome@exemplo.com",
+      "sendError": "Não foi possível enviar o código. Tenta novamente.",
+      "invalid": "Código inválido ou expirado.",
+      "title": "Enviámos um código de verificação",
+      "sentTo": "Introduza abaixo o código enviado para <strong>{email}</strong>.",
+      "codeLabel": "Código de verificação",
+      "noCode": "Não recebeu o código?",
+      "resend": "Reenviar",
+      "resent": "Novo código enviado."
+    },
+    "onboarding": {
+      "title": "Vamos começar",
+      "subtitle": "Só precisamos de saber como te chamar.",
+      "name": "Nome completo",
+      "namePlaceholder": "Maria Silva",
+      "nameRequired": "Indique o seu nome completo.",
+      "nameInvalid": "Nome inválido."
+    },
+    "passkeyOffer": {
+      "title": "Entre mais rápido com palavra-chave",
+      "subtitle": "Use a impressão digital, o rosto ou o PIN do dispositivo para iniciar sessão.",
+      "register": "Registar",
+      "notNow": "Agora não",
+      "createError": "Não foi possível criar a passkey.",
+      "created": "Passkey criada."
+    },
+    "passkeySettings": {
+      "label": "Entrar com passkey",
+      "count": "{count, plural, one {# passkey registada.} other {# passkeys registadas.}}",
+      "none": "Nenhuma passkey registada.",
+      "createError": "Não foi possível criar a passkey.",
+      "enabled": "Passkey ativada.",
+      "disableError": "Não foi possível desativar a passkey.",
+      "removeError": "Não foi possível remover todas as passkeys.",
+      "disabled": "Passkey desativada."
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "home": "Início",
+      "payments": "Pagamentos",
+      "notifications": "Notificações",
+      "saved": "Guardados",
+      "favorites": "Favoritos",
+      "account": "Conta",
+      "accountMenu": "Menu da conta",
+      "menu": "Menu",
+      "profile": "Perfil",
+      "settings": "Definições"
+    },
+    "accountMenu": {
+      "profileDescription": "Os dados da tua conta",
+      "settingsDescription": "Aparência, idioma e segurança"
+    },
+    "home": {
+      "nextStepTitle": "Próximo passo",
+      "nextStep": "Cria uma funcionalidade em <code>features/</code>, coloca as consultas protegidas na DAL e usa Server Actions para mutações."
+    },
+    "profile": {
+      "edit": "Editar",
+      "accountTitle": "Conta",
+      "accountDescription": "Obtidos do teu fornecedor de login.",
+      "emailVerified": "Email verificado",
+      "emailUnverified": "Email por verificar",
+      "editTitle": "Editar perfil",
+      "personalData": "Dados pessoais",
+      "emailLocked": "O email vem do teu fornecedor de login e não pode ser alterado.",
+      "name": "Nome",
+      "email": "Email",
+      "save": "Guardar",
+      "saveError": "Não foi possível guardar o perfil.",
+      "saved": "Perfil atualizado."
+    },
+    "settings": {
+      "appearance": "Aparência",
+      "appearanceDescription": "Alterna entre tema claro e escuro.",
+      "theme": "Tema",
+      "toggleTheme": "Alternar tema",
+      "language": "Idioma",
+      "languageDescription": "Língua da aplicação.",
+      "languageLabel": "Idioma da aplicação",
+      "notifications": "Notificações",
+      "notificationsDescription": "Avisos push neste dispositivo.",
+      "security": "Segurança",
+      "securityDescription": "Inicia sessão com impressão digital, rosto ou PIN do dispositivo.",
+      "deleteAccount": {
+        "title": "Eliminar conta",
+        "description": "Elimina permanentemente a sua conta e tudo o que está associado.",
+        "warning": "Esta ação não pode ser anulada. O seu perfil, tarefas, passkeys, subscrições de notificações, histórico de pagamentos e ficheiros carregados são eliminados.",
+        "button": "Eliminar conta",
+        "dialogTitle": "Eliminar a sua conta?",
+        "dialogDescription": "Todos os seus dados serão eliminados permanentemente e a sessão será terminada. Esta ação não pode ser anulada.",
+        "confirmLabel": "Escreva {email} para confirmar",
+        "cancel": "Cancelar",
+        "confirm": "Eliminar definitivamente",
+        "success": "A sua conta foi eliminada.",
+        "goToPayments": "Gerir subscrições",
+        "errors": {
+          "sessionExpired": "Por segurança, termine a sessão, inicie sessão novamente e tente de imediato.",
+          "activeSubscription": "Tem uma subscrição ativa. Cancele-a antes de eliminar a conta.",
+          "generic": "Não foi possível eliminar a conta. Tente novamente."
+        }
+      }
+    }
+  },
+  "push": {
+    "title": "Notificações push",
+    "checking": "A verificar…",
+    "unsupported": "Este navegador não suporta notificações push.",
+    "install": "No iPhone/iPad, adiciona a app ao ecrã principal (Partilhar → Adicionar ao ecrã principal) para ativar.",
+    "denied": "Bloqueadas no navegador. Permite as notificações nas definições do site para as ativar.",
+    "on": "Ativas neste dispositivo.",
+    "off": "Recebe avisos mesmo com a app fechada.",
+    "disabledToast": "Notificações desativadas neste dispositivo.",
+    "enabledToast": "Notificações ativadas.",
+    "enableError": "Não foi possível ativar as notificações.",
+    "sendTest": "Enviar notificação de teste",
+    "testSent": "Notificação de teste enviada.",
+    "testError": "Não foi possível enviar o teste.",
+    "testBody": "As notificações estão a funcionar."
+  },
+  "tasks": {
+    "title": "Tarefas de exemplo",
+    "description": "Este fluxo demonstra PostgreSQL, DAL, cache Redis, Server Actions e BullMQ.",
+    "newTask": "Nova tarefa",
+    "placeholder": "Adicionar uma tarefa",
+    "add": "Adicionar",
+    "empty": "Ainda não há tarefas.",
+    "remove": "Remover"
+  },
+  "payments": {
+    "title": "Pagamentos",
+    "status": {
+      "succeeded": "Pagamento confirmado.",
+      "failed": "O pagamento não foi concluído.",
+      "cancelled": "O checkout foi cancelado.",
+      "pending": "Aguardando confirmação segura do provider…"
+    },
+    "opening": "A abrir…",
+    "continue": "Continuar para pagamento",
+    "noProducts": "Ainda não há produtos de pagamento configurados. Define PAYMENT_CATALOG no ambiente para activar o checkout.",
+    "subscriptions": "Subscrições",
+    "until": "Até {date}",
+    "cancelling": "A cancelar…",
+    "cancelAtPeriodEnd": "Cancelar no fim do período",
+    "cancelScheduled": "Cancelamento agendado",
+    "history": "Histórico de pagamentos",
+    "checkoutError": "Não foi possível iniciar o checkout. Tenta novamente.",
+    "cancelError": "Não foi possível cancelar a subscrição."
+  },
+  "email": {
+    "otp": {
+      "subject": "{code} é o seu código de verificação",
+      "heading": "Código de Verificação",
+      "body": "Este código expira em {minutes} minutos e só pode ser usado uma vez. Para sua segurança, não compartilhe este código com ninguém.",
+      "footer": "Se você acha que isso foi um erro, contate o suporte."
+    }
+  },
+  "legal": {
+    "back": "Voltar",
+    "lastUpdated": "Última atualização: {date}",
+    "notice": "Este é um modelo de partida, não aconselhamento jurídico. Peça a um advogado que o reveja e o adapte ao seu serviço antes do lançamento.",
+    "footer": {
+      "terms": "Termos",
+      "privacy": "Privacidade"
+    },
+    "acceptance": "Ao continuar, aceita os <terms>Termos e Condições</terms> e a <privacy>Política de Privacidade</privacy>.",
+    "terms": {
+      "title": "Termos e Condições",
+      "description": "As regras de utilização deste serviço.",
+      "intro": "Estes Termos regem a utilização de {company} (o \"Serviço\"). Ao criar uma conta ou utilizar o Serviço, aceita-os. Se não concordar, não utilize o Serviço.",
+      "sections": [
+        {
+          "title": "1. A sua conta",
+          "body": [
+            "Deve fornecer informação correta e manter seguros os seus métodos de início de sessão (e-mail, passkeys, Google). É responsável pela atividade na sua conta. Avise-nos em {email} se suspeitar de acesso não autorizado.",
+            "Deve ter idade para celebrar um contrato vinculativo no seu país e, no mínimo, 16 anos."
+          ]
+        },
+        {
+          "title": "2. Utilização aceitável",
+          "body": [
+            "Não utilize o Serviço para violar a lei, infringir direitos de terceiros, enviar spam ou malware, sondar ou perturbar o Serviço, ou contornar limites de utilização e medidas de segurança.",
+            "Só pode carregar ficheiros que tenha o direito de partilhar. Podemos remover conteúdos ou suspender contas que violem estes Termos."
+          ]
+        },
+        {
+          "title": "3. O seu conteúdo",
+          "body": [
+            "Mantém a propriedade do que carrega ou cria. Concede-nos uma licença limitada para alojar, processar e apresentar esse conteúdo apenas para operar o Serviço para si."
+          ]
+        },
+        {
+          "title": "4. Pagamentos e subscrições",
+          "body": [
+            "As funcionalidades pagas são cobradas através dos nossos prestadores de pagamento ao preço indicado no checkout. As subscrições renovam até serem canceladas; pode cancelar a qualquer momento e mantém o acesso até ao fim do período pago. Os reembolsos seguem a lei do seu país e qualquer política indicada no checkout.",
+            "Não guardamos os dados do seu cartão; são tratados pelo prestador de pagamento."
+          ]
+        },
+        {
+          "title": "5. Disponibilidade e alterações",
+          "body": [
+            "Esforçamo-nos por manter o Serviço disponível, mas não garantimos funcionamento ininterrupto. Podemos alterar ou descontinuar funcionalidades e daremos aviso razoável de alterações que o afetem significativamente."
+          ]
+        },
+        {
+          "title": "6. Cessação",
+          "body": [
+            "Pode eliminar a sua conta a qualquer momento nas Definições. Podemos suspender ou encerrar contas que violem estes Termos. Ao eliminar a conta, os seus dados são removidos conforme a Política de Privacidade."
+          ]
+        },
+        {
+          "title": "7. Exclusão de garantias e responsabilidade",
+          "body": [
+            "O Serviço é fornecido \"tal como está\". Na medida permitida por lei, não respondemos por danos indiretos ou consequenciais, e a nossa responsabilidade total limita-se ao valor que nos pagou nos 12 meses anteriores à reclamação. Nada limita a responsabilidade que a lei não permita limitar."
+          ]
+        },
+        {
+          "title": "8. Alterações a estes Termos",
+          "body": [
+            "Podemos atualizar estes Termos. Publicaremos a nova versão aqui e, em alterações relevantes, notificá-lo-emos. Continuar a utilizar o Serviço após a alteração significa que a aceita."
+          ]
+        },
+        {
+          "title": "9. Lei aplicável e contacto",
+          "body": [
+            "Estes Termos regem-se pela lei do país onde {company} está estabelecida, cujos tribunais são competentes, sem prejuízo dos direitos imperativos do consumidor. Questões: {email}."
+          ]
+        }
+      ]
+    },
+    "privacy": {
+      "title": "Política de Privacidade",
+      "description": "Que dados recolhemos, porquê, e os seus direitos.",
+      "intro": "{company} («nós») respeita a sua privacidade. Esta política explica que dados pessoais o Serviço trata, porquê, e o que pode fazer a esse respeito.",
+      "sections": [
+        {
+          "title": "1. Dados que recolhemos",
+          "body": [
+            "Dados da conta: nome, endereço de e-mail, fotografia de perfil (se iniciar sessão com o Google) e credenciais de início de sessão, como chaves públicas de passkeys. Sessões: um token de sessão, endereço IP e descrição do navegador/dispositivo.",
+            "Conteúdo e atividade: tarefas, ficheiros carregados, mensagens trocadas através de canais ligados (como o WhatsApp) e registos de pagamento (produto, valor, estado, referências do prestador; nunca números completos de cartão).",
+            "Dados do dispositivo: subscrições de notificações push que ativar, e registos técnicos e relatórios de erros necessários para operar e proteger o Serviço."
+          ]
+        },
+        {
+          "title": "2. Para que os usamos (bases legais)",
+          "body": [
+            "Para prestar o Serviço e executar o contrato consigo (conta, início de sessão, funcionalidades, pagamentos); para o manter seguro e prevenir abusos (interesses legítimos); para enviar notificações que autorizou (consentimento); e para cumprir obrigações legais, como a contabilidade."
+          ]
+        },
+        {
+          "title": "3. Cookies e armazenamento local",
+          "body": [
+            "Usamos apenas cookies e armazenamento essenciais: o cookie de sessão, as preferências de idioma (NEXT_LOCALE) e de tema, e um cookie que lembra que dispensou um aviso. Não usamos cookies de publicidade nem de rastreamento entre sites, pelo que não é necessário banner de consentimento. Se adicionar ferramentas de analítica ou marketing, atualize esta secção e peça consentimento primeiro."
+          ]
+        },
+        {
+          "title": "4. Com quem partilhamos dados",
+          "body": [
+            "Prestadores de serviços que atuam segundo as nossas instruções: alojamento e base de dados, envio de e-mail (ex.: Resend), processadores de pagamento (ex.: EPay, Dodo Payments), WhatsApp/Meta para as mensagens que utiliza, armazenamento de ficheiros, monitorização de erros (ex.: Sentry) e Google, se escolher iniciar sessão com o Google. Não vendemos dados pessoais. Podemos divulgar dados quando a lei o exigir."
+          ]
+        },
+        {
+          "title": "5. Transferências internacionais",
+          "body": [
+            "Alguns prestadores podem tratar dados fora do seu país ou do EEE. Quando necessário, recorremos a garantias como as cláusulas contratuais-tipo."
+          ]
+        },
+        {
+          "title": "6. Conservação",
+          "body": [
+            "Conservamos os dados da conta enquanto a conta existir. Sessões e códigos de verificação expirados são apagados automaticamente; subscrições push revogadas, após 30 dias. Quando elimina a conta, o seu perfil, tarefas, passkeys, subscrições e ficheiros carregados são eliminados de imediato. As cópias de segurança são substituídas no ciclo normal. Podemos manter registos limitados exigidos por lei (por exemplo, fiscais ou contabilísticos) durante o prazo legal."
+          ]
+        },
+        {
+          "title": "7. Os seus direitos",
+          "body": [
+            "Consoante onde vive (por exemplo, ao abrigo do RGPD ou da LGPD brasileira) pode aceder, retificar, exportar, limitar ou opor-se ao tratamento dos seus dados, retirar o consentimento e apresentar queixa à autoridade de proteção de dados. Pode editar o perfil e eliminar a conta nas Definições; para o resto, escreva para {email}. Respondemos no prazo de um mês."
+          ]
+        },
+        {
+          "title": "8. Segurança",
+          "body": [
+            "Usamos cifragem em trânsito, códigos de utilização única com hash, limitação de pedidos, acesso restrito e Content Security Policy. Nenhum sistema é perfeitamente seguro; avise-nos em {email} se encontrar uma vulnerabilidade."
+          ]
+        },
+        {
+          "title": "9. Crianças",
+          "body": ["O Serviço não se destina a menores de 16 anos e não recolhemos conscientemente os seus dados."]
+        },
+        {
+          "title": "10. Alterações e contacto",
+          "body": [
+            "Publicaremos as atualizações nesta página e, em alterações relevantes, notificá-lo-emos. Responsável pelo tratamento e contacto: {company}, {email}."
+          ]
+        }
+      ]
+    }
+  }
+}
