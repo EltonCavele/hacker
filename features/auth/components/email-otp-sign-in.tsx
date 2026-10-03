@@ -36,7 +36,15 @@ function Reveal({ open, children }: { open: boolean; children: React.ReactNode }
 }
 
 /** `children` are the alternative sign-in methods; they are hidden once the email looks valid. */
-export function EmailOtpSignIn({ header, children }: { header?: React.ReactNode; children?: React.ReactNode }) {
+export function EmailOtpSignIn({
+  header,
+  children,
+  callbackURL = "/dashboard",
+}: {
+  header?: React.ReactNode;
+  children?: React.ReactNode;
+  callbackURL?: string;
+}) {
   const t = useTranslations("auth.otp");
   const common = useTranslations("common");
   const router = useRouter();
@@ -82,11 +90,11 @@ export function EmailOtpSignIn({ header, children }: { header?: React.ReactNode;
     authClient.signIn.passkey({ autoFill: true }).then(({ data }) => {
       if (data) {
         setDevicePasskey(true);
-        router.push("/dashboard");
+        router.push(callbackURL);
         router.refresh();
       }
     });
-  }, [conditional, step, router]);
+  }, [callbackURL, conditional, step, router]);
 
   async function sendCode(event?: React.FormEvent<HTMLFormElement>) {
     event?.preventDefault();
@@ -123,7 +131,7 @@ export function EmailOtpSignIn({ header, children }: { header?: React.ReactNode;
       setError(t("invalid"));
       return;
     }
-    router.push("/dashboard");
+    router.push(callbackURL);
     router.refresh();
   }
 

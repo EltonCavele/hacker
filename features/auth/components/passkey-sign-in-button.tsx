@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/client";
 import { setDevicePasskey, usePasskeySupport } from "../hooks/use-passkey-support";
 
-export function PasskeySignInButton() {
+export function PasskeySignInButton({ callbackURL = "/dashboard" }: { callbackURL?: string }) {
   const t = useTranslations("auth.login");
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +26,7 @@ export function PasskeySignInButton() {
       return;
     }
     setDevicePasskey(true);
-    router.push("/dashboard");
+    router.push(callbackURL);
   }
 
   return (

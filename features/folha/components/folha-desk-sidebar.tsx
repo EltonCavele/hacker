@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Chart, CreditCard, Document, Home6 } from "reicon-react";
+import { useTranslations } from "next-intl";
+import { Chart, CreditCard, Document, Home6, Logout } from "reicon-react";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   Sidebar,
   SidebarBrand,
@@ -17,6 +19,7 @@ import {
   SidebarSubLink,
   SidebarSubmenu,
 } from "@/components/ui/sidebar";
+import { SignOutButton, useSignOut } from "@/features/auth/components/sign-out-button";
 import { FolhaLogo } from "@/features/folha/components/folha-logo";
 
 const navItems = [
@@ -24,6 +27,41 @@ const navItems = [
   { href: "/folha/auditor", label: "Auditoria", icon: Document, exact: false },
   { href: "/folha/cedsif", label: "CEDSIF", icon: CreditCard, exact: false },
 ] as const;
+
+function DeskSignOut() {
+  const t = useTranslations("common");
+  const { signOut, isLoading } = useSignOut();
+
+  return (
+    <>
+      <SidebarItem className="max-md:hidden">
+        <SidebarLink asChild>
+          <button aria-label={t("signOut")} disabled={isLoading} onClick={signOut} type="button">
+            <SidebarIcon icon={Logout} />
+            <SidebarLabel>{t("signOut")}</SidebarLabel>
+          </button>
+        </SidebarLink>
+      </SidebarItem>
+      <SidebarItem className="md:hidden">
+        <Sheet>
+          <SidebarLink asChild>
+            <SheetTrigger aria-label={t("signOut")} type="button">
+              <SidebarIcon icon={Logout} />
+            </SheetTrigger>
+          </SidebarLink>
+          <SheetContent
+            className="rounded-t-2xl p-4 pb-[max(1rem,env(safe-area-inset-bottom))]"
+            showCloseButton={false}
+            side="bottom"
+          >
+            <SheetTitle className="sr-only">{t("signOut")}</SheetTitle>
+            <SignOutButton className="w-full" />
+          </SheetContent>
+        </Sheet>
+      </SidebarItem>
+    </>
+  );
+}
 
 export function FolhaDeskSidebar() {
   const pathname = usePathname();
@@ -51,6 +89,7 @@ export function FolhaDeskSidebar() {
               </SidebarLink>
             </SidebarItem>
           ))}
+          <DeskSignOut />
         </SidebarMenu>
         <SidebarSubmenu>
           <SidebarSubitem>

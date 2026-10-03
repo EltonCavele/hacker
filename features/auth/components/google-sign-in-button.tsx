@@ -15,13 +15,13 @@ function GoogleLogo() {
   );
 }
 
-export function GoogleSignInButton() {
+export function GoogleSignInButton({ callbackURL = "/dashboard" }: { callbackURL?: string }) {
   const t = useTranslations("auth.login");
   return (
     <Button
       size="lg"
       variant="secondary"
-      onClick={() => authClient.signIn.social({ provider: "google", callbackURL: "/dashboard" })}
+      onClick={() => authClient.signIn.social({ provider: "google", callbackURL })}
       type="button"
     >
       <GoogleLogo />

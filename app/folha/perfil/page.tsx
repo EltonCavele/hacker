@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
+import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import { RoleSwitcher } from "@/features/folha/components/role-switcher";
 import { FolhaLogo } from "@/features/folha/components/folha-logo";
-import { getSession } from "@/features/auth/queries";
 import { getFolhaRole } from "@/features/folha/role";
 
 export default async function PerfilPage() {
-  const session = await getSession();
   const role = await getFolhaRole();
   const t = await getTranslations("folha");
   return (
@@ -18,18 +17,10 @@ export default async function PerfilPage() {
       </div>
       <p className="mt-2 text-sm text-muted-foreground">{t("tagline")}</p>
       <div className="mt-8 space-y-4">
-        {session ? (
-          <>
-            <p className="text-sm font-medium">Papel nesta demonstração</p>
-            <RoleSwitcher role={role} />
-          </>
-        ) : (
-          <Button asChild className="w-full">
-            <Link href="/login">Entrar</Link>
-          </Button>
-        )}
+        <p className="text-sm font-medium">Papel nesta demonstração</p>
+        <RoleSwitcher role={role} />
         <Button asChild className="w-full" variant="outline">
-          <Link href="/folha/painel">Painel público</Link>
+          <Link href="/folha/painel">Painel</Link>
         </Button>
         <Button asChild className="w-full" variant="ghost">
           <Link href="/folha/auditor">Auditoria</Link>
@@ -37,6 +28,7 @@ export default async function PerfilPage() {
         <Button asChild className="w-full" variant="ghost">
           <Link href="/folha/cedsif">CEDSIF</Link>
         </Button>
+        <SignOutButton className="w-full" />
       </div>
     </div>
   );

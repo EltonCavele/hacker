@@ -2,7 +2,9 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
+import { loginRedirectPath } from "@/features/auth/redirect-to-login";
 import { getSession } from "@/features/auth/queries";
 import { prisma } from "@/lib/db/client";
 import { RATE_LIMITS, enforceRateLimit } from "@/lib/rate-limit";
@@ -15,9 +17,9 @@ const photoSchema = z.enum(["MATCH", "NO_SHOW", "LOCATION_FAIL", "NOT_A_LIVE_FAC
 
 async function requireRole(allowed: FolhaRole[]) {
   const session = await getSession();
+  if (!session) redirect(await loginRedirectPath("/folha"));
   const role = await getFolhaRole();
   if (!allowed.includes(role)) throw new Error("folha-role");
-  if (!session) return { id: "folha-demo" };
   return { id: session.user.id };
 }
 
@@ -26,6 +28,8 @@ function refresh() {
 }
 
 export async function setFolhaRole(role: string) {
+  const session = await getSession();
+  if (!session) redirect(await loginRedirectPath("/folha"));
   if (!isFolhaRole(role)) return;
   (await cookies()).set(FOLHA_ROLE_COOKIE, role, {
     path: "/",

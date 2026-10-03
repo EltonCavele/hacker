@@ -7,13 +7,14 @@ import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
 import { ContestForm } from "@/features/folha/components/contest-form";
 import { FolhaBadge } from "@/features/folha/components/folha-badge";
+import { loginRedirectPath } from "@/features/auth/redirect-to-login";
 import { getSession } from "@/features/auth/queries";
 import { getActiveCycle, getEmployeeDesk } from "@/features/folha/queries";
 import { getFolhaRole } from "@/features/folha/role";
 
 export default async function FuncionarioPage({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
   const session = await getSession();
-  if (!session) redirect("/login");
+  if (!session) redirect(await loginRedirectPath("/folha/funcionario"));
   if ((await getFolhaRole()) !== "employee") redirect("/folha");
   const [{ id }, cycle] = await Promise.all([searchParams, getActiveCycle()]);
   if (!cycle) return <EmptyState title="Sem ciclo de folha" description="Corre o seed da Folha Viva." />;

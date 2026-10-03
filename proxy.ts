@@ -35,6 +35,9 @@ export async function proxy(request: NextRequest) {
   requestHeaders.set("x-nonce", nonce);
   requestHeaders.set("x-request-id", requestId);
   requestHeaders.set("Content-Security-Policy", csp);
+  // Real request path, so a login wall can send the visitor back here. Overwrites anything the client sent.
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  requestHeaders.set("x-search", request.nextUrl.search);
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set("Content-Security-Policy", csp);
