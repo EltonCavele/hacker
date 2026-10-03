@@ -71,7 +71,7 @@ export default async function CedsifPage() {
           </div>
           <ul className="divide-y divide-border">
             {desk.anomalies.map((alert) => (
-              <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={alert.id}>
+              <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={`${alert.id}-${alert.employeeId ?? alert.unitId}`}>
                 <div className="min-w-0 max-w-xl">
                   <p className="font-medium">{alert.detail}</p>
                   <p className="text-sm text-muted-foreground">{alert.employee?.name ?? "Unidade"}</p>
