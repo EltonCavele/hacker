@@ -16,7 +16,8 @@
     "title": "Uma base sólida para a próxima aplicação.",
     "subtitle": "App Router, Better Auth, PostgreSQL, Prisma ORM e Redis com BullMQ.",
     "signIn": "Entrar",
-    "openDashboard": "Abrir dashboard"
+    "openDashboard": "Abrir dashboard",
+    "openFolha": "Abrir Folha Viva"
   },
   "notFound": {
     "title": "Página não encontrada",
@@ -80,6 +81,7 @@
     "nav": {
       "home": "Início",
       "payments": "Pagamentos",
+      "folha": "Folha Viva",
       "notifications": "Notificações",
       "saved": "Guardados",
       "favorites": "Favoritos",
@@ -336,6 +338,25 @@
           ]
         }
       ]
+    }
+  },
+  "folha": {
+    "title": "Folha Viva",
+    "tagline": "Cada salário tem uma unidade, um chefe, um rosto e uma conta.",
+    "nav": {
+      "chief": "Chefe",
+      "auditor": "Auditor",
+      "cedsif": "CEDSIF",
+      "employee": "Funcionário",
+      "panel": "Painel",
+      "signIn": "Entrar"
+    },
+    "roles": {
+      "label": "Papel",
+      "chief": "Chefe de unidade",
+      "auditor": "Auditor",
+      "cedsif": "CEDSIF",
+      "employee": "Funcionário"
     }
   }
 }

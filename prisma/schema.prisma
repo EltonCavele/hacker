@@ -252,3 +252,288 @@ model OutboxEvent {
   @@index([processedAt, availableAt])
   @@map("outbox_events")
 }
+
+enum FolhaSector {
+  EDUCATION
+  HEALTH
+  DISTRICT_ADMIN
+  POLICE
+  CENTRAL
+}
+
+enum FolhaEmployeeStatus {
+  ACTIVE
+  IN_TRANSIT
+  DISPLACED
+  ON_LEAVE
+  LEFT
+  DECEASED
+  NO_UNIT
+  ADMISSION_PENDING
+}
+
+enum FolhaAttestationMark {
+  PRESENT
+  ABSENT_JUSTIFIED
+  ON_LEAVE
+  TRANSFERRED
+  LEFT
+  DECEASED
+  UNKNOWN
+}
+
+enum FolhaAnomalyType {
+  SHARED_ACCOUNT
+  ACCOUNT_HOLDER_MISMATCH
+  DUPLICATE_FACE
+  DUPLICATE_NUIT
+  DUPLICATE_ID
+  SALARY_AND_PENSION
+  OVER_RETIREMENT_AGE
+  NO_UNIT
+  NO_CHIEF
+  GROWTH_WITHOUT_ADMISSION
+  UNUSUAL_OPERATOR
+}
+
+enum FolhaRisk {
+  HIGH
+  MEDIUM
+}
+
+enum FolhaDrawPhotoResult {
+  MATCH
+  NO_SHOW
+  LOCATION_FAIL
+  NOT_A_LIVE_FACE
+}
+
+enum FolhaMovementType {
+  ADMISSION
+  TRANSFER
+  RETIREMENT
+  DEATH
+  ABANDONMENT
+}
+
+enum FolhaContestStatus {
+  OPEN
+  VERIFIED_GENUINE
+  VERIFIED_GHOST
+}
+
+enum FolhaCaseType {
+  DISCIPLINARY
+  VOLUNTARY_RETURN
+}
+
+enum FolhaCaseStatus {
+  OPEN
+  CLOSED
+}
+
+model FolhaCycle {
+  id        String   @id @default(uuid()) @db.Uuid
+  yearMonth String   @unique @map("year_month")
+  opensAt   DateTime @map("opens_at") @db.Timestamptz(6)
+  closesAt  DateTime @map("closes_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  attestations FolhaAttestation[]
+  anomalies    FolhaAnomaly[]
+  draws        FolhaDraw[]
+  audits       FolhaAudit[]
+  contests     FolhaContest[]
+
+  @@map("folha_cycles")
+}
+
+model FolhaUnit {
+  id               String      @id @default(uuid()) @db.Uuid
+  name             String
+  type             String
+  sector           FolhaSector
+  district         String
+  province         String
+  ugb              String
+  parentId         String?     @map("parent_id") @db.Uuid
+  parent           FolhaUnit?  @relation("FolhaUnitTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children         FolhaUnit[] @relation("FolhaUnitTree")
+  chiefEmployeeId  String?     @unique @map("chief_employee_id") @db.Uuid
+  chief            FolhaEmployee? @relation("FolhaUnitChief", fields: [chiefEmployeeId], references: [id], onDelete: SetNull)
+  deputyEmployeeId String?     @map("deputy_employee_id") @db.Uuid
+  deputy           FolhaEmployee? @relation("FolhaUnitDeputy", fields: [deputyEmployeeId], references: [id], onDelete: SetNull)
+  offlineZone      Boolean     @default(false) @map("offline_zone")
+  conflictZone     Boolean     @default(false) @map("conflict_zone")
+  deviceWiped      Boolean     @default(false) @map("device_wiped")
+  createdAt        DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  employees     FolhaEmployee[] @relation("FolhaEmployeeUnit")
+  attestations  FolhaAttestation[]
+  anomalies     FolhaAnomaly[]
+  draws         FolhaDraw[]
+  audits        FolhaAudit[]
+  fromMovements FolhaMovement[] @relation("FolhaMovementFrom")
+  toMovements   FolhaMovement[] @relation("FolhaMovementTo")
+
+  @@index([district])
+  @@map("folha_units")
+}
+
+model FolhaEmployee {
+  id                String              @id @default(uuid()) @db.Uuid
+  name              String
+  nuit              String
+  identityCard      String              @map("identity_card")
+  bornAt            DateTime            @map("born_at") @db.Date
+  faceToken         String              @map("face_token")
+  accountNumber     String              @map("account_number")
+  accountHolder     String              @map("account_holder")
+  salaryMzn         Int                 @map("salary_mzn")
+  status            FolhaEmployeeStatus @default(ACTIVE)
+  receivesPension   Boolean             @default(false) @map("receives_pension")
+  operatorId        String              @map("operator_id")
+  createdWithoutProcess Boolean         @default(false) @map("created_without_process")
+  unitId            String?             @map("unit_id") @db.Uuid
+  unit              FolhaUnit?          @relation("FolhaEmployeeUnit", fields: [unitId], references: [id], onDelete: SetNull)
+  transitStartedAt  DateTime?           @map("transit_started_at") @db.Timestamptz(6)
+  leaveEndsAt       DateTime?           @map("leave_ends_at") @db.Timestamptz(6)
+  unclaimedSince    DateTime?           @map("unclaimed_since") @db.Timestamptz(6)
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  headedUnits  FolhaUnit[] @relation("FolhaUnitChief")
+  deputyUnits  FolhaUnit[] @relation("FolhaUnitDeputy")
+  attestations FolhaAttestation[]
+  anomalies    FolhaAnomaly[]
+  draws        FolhaDraw[]
+  audits       FolhaAudit[]
+  movements    FolhaMovement[]
+  contests     FolhaContest[]
+  cases        FolhaCase[]
+
+  @@index([nuit])
+  @@index([identityCard])
+  @@index([faceToken])
+  @@index([accountNumber])
+  @@index([unitId])
+  @@map("folha_employees")
+}
+
+model FolhaAttestation {
+  id             String               @id @default(uuid()) @db.Uuid
+  cycleId        String               @map("cycle_id") @db.Uuid
+  cycle          FolhaCycle           @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  unitId         String               @map("unit_id") @db.Uuid
+  unit           FolhaUnit            @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  employeeId     String               @map("employee_id") @db.Uuid
+  employee       FolhaEmployee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  mark           FolhaAttestationMark
+  justification  String?
+  createdOffline Boolean              @default(false) @map("created_offline")
+  synced         Boolean              @default(true)
+  warnedAt       DateTime?            @map("warned_at") @db.Timestamptz(6)
+  createdAt      DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([cycleId, employeeId])
+  @@index([unitId, cycleId])
+  @@map("folha_attestations")
+}
+
+model FolhaAnomaly {
+  id         String           @id @default(uuid()) @db.Uuid
+  cycleId    String           @map("cycle_id") @db.Uuid
+  cycle      FolhaCycle       @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  type       FolhaAnomalyType
+  risk       FolhaRisk
+  employeeId String?          @map("employee_id") @db.Uuid
+  employee   FolhaEmployee?   @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  unitId     String?          @map("unit_id") @db.Uuid
+  unit       FolhaUnit?       @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  detail     String
+  createdAt  DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([cycleId, risk])
+  @@map("folha_anomalies")
+}
+
+model FolhaDraw {
+  id          String                 @id @default(uuid()) @db.Uuid
+  cycleId     String                 @map("cycle_id") @db.Uuid
+  cycle       FolhaCycle             @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  unitId      String                 @map("unit_id") @db.Uuid
+  unit        FolhaUnit              @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  employeeId  String                 @map("employee_id") @db.Uuid
+  employee    FolhaEmployee          @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  photoResult FolhaDrawPhotoResult?
+  completedAt DateTime?              @map("completed_at") @db.Timestamptz(6)
+  createdAt   DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([cycleId, employeeId])
+  @@index([unitId, cycleId])
+  @@map("folha_draws")
+}
+
+model FolhaAudit {
+  id         String                @id @default(uuid()) @db.Uuid
+  cycleId    String                @map("cycle_id") @db.Uuid
+  cycle      FolhaCycle            @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  unitId     String                @map("unit_id") @db.Uuid
+  unit       FolhaUnit             @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  employeeId String                @map("employee_id") @db.Uuid
+  employee   FolhaEmployee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  attestedAs FolhaAttestationMark?
+  foundPresent Boolean             @map("found_present")
+  visitedAt  DateTime              @default(now()) @map("visited_at") @db.Timestamptz(6)
+
+  @@index([unitId, cycleId])
+  @@map("folha_audits")
+}
+
+model FolhaMovement {
+  id          String            @id @default(uuid()) @db.Uuid
+  type        FolhaMovementType
+  employeeId  String            @map("employee_id") @db.Uuid
+  employee    FolhaEmployee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  fromUnitId  String?           @map("from_unit_id") @db.Uuid
+  fromUnit    FolhaUnit?        @relation("FolhaMovementFrom", fields: [fromUnitId], references: [id], onDelete: SetNull)
+  toUnitId    String?           @map("to_unit_id") @db.Uuid
+  toUnit      FolhaUnit?        @relation("FolhaMovementTo", fields: [toUnitId], references: [id], onDelete: SetNull)
+  createdBy   String            @map("created_by")
+  acceptedBy  String?           @map("accepted_by")
+  occurredAt  DateTime          @map("occurred_at") @db.Timestamptz(6)
+  acceptedAt  DateTime?         @map("accepted_at") @db.Timestamptz(6)
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([employeeId, occurredAt])
+  @@map("folha_movements")
+}
+
+model FolhaContest {
+  id            String             @id @default(uuid()) @db.Uuid
+  cycleId       String             @map("cycle_id") @db.Uuid
+  cycle         FolhaCycle         @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  employeeId    String             @map("employee_id") @db.Uuid
+  employee      FolhaEmployee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  status        FolhaContestStatus @default(OPEN)
+  reason        String
+  resolvedAt    DateTime?          @map("resolved_at") @db.Timestamptz(6)
+  reactivatedAt DateTime?          @map("reactivated_at") @db.Timestamptz(6)
+  createdAt     DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([employeeId, cycleId])
+  @@map("folha_contests")
+}
+
+model FolhaCase {
+  id              String          @id @default(uuid()) @db.Uuid
+  type            FolhaCaseType
+  status          FolhaCaseStatus @default(OPEN)
+  employeeId      String          @map("employee_id") @db.Uuid
+  employee        FolhaEmployee   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  detail          String
+  amountRecovered Int             @default(0) @map("amount_recovered")
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([status])
+  @@map("folha_cases")
+}

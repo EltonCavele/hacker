@@ -109,6 +109,8 @@ Every screen handles four states the same way:
 
 `background`, `foreground`, `primary`, `secondary`, `muted`, `accent`, `border`, `input`, `ring`, `card`, `popover`, `destructive`, plus the status tokens added for this project: `success`, `warning`, `info` (each with a `-foreground` pair). Charts and sidebar tokens exist for later use.
 
+The Folha Viva screens (`/folha`) wrap in `.folha-app` and override the same tokens (cream, forest, leaf-green). `.folha-desk` is the dark desk for CEDSIF/auditoria. Nextpad itself stays on the global `:root` / `.dark` tokens.
+
 Dark mode is class-based and managed by `next-themes` (`components/theme-provider.tsx`, mounted in `app/layout.tsx`, following the OS by default). Drop `<ThemeToggle />` (`components/theme-toggle.tsx`) anywhere to let users switch.
 
 `TooltipProvider` and `Toaster` are mounted once in `app/layout.tsx`; don't add them elsewhere.

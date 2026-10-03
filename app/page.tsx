@@ -22,6 +22,9 @@ export default async function Home() {
         <Button asChild variant="outline" size="lg">
           <Link href="/dashboard">{t("openDashboard")}</Link>
         </Button>
+        <Button asChild variant="outline" size="lg">
+          <Link href="/folha">{t("openFolha")}</Link>
+        </Button>
       </div>
       <footer className="flex gap-4 text-sm text-muted-foreground">
         <Link href="/terms" className="underline underline-offset-4 hover:text-foreground">{legal("footer.terms")}</Link>

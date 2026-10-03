@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { Bell, Bookmark, ChevronRight, CreditCard, Home6, Logout, Menu, Settings, Star, User } from "reicon-react";
+import { Bell, Bookmark, ChevronRight, CreditCard, Document, Home6, Logout, Menu, Settings, Star, User } from "reicon-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -32,6 +32,7 @@ import { authClient } from "@/lib/auth/client";
 
 const navItems = [
   { href: "/dashboard", label: "home", icon: Home6, exact: true },
+  { href: "/folha", label: "folha", icon: Document, exact: false },
   { href: "/dashboard/payments", label: "payments", icon: CreditCard, exact: false },
   // Temporary items to exercise the tab bar "Menu" overflow; the routes don't exist yet.
   { href: "/dashboard/notifications", label: "notifications", icon: Bell, exact: false },

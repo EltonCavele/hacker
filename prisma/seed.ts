@@ -1,5 +1,6 @@
-// Development seed: a demo user with a few tasks. Idempotent. Refuses to run against production.
+// Development seed: a demo user with a few tasks, plus the Folha Viva demonstration payroll.
 import "dotenv/config";
+import { seedFolha } from "./folha-seed";
 import { standalonePrisma as prisma } from "../lib/db/standalone";
 
 async function main() {
@@ -7,7 +8,6 @@ async function main() {
     throw new Error("Refusing to seed in production (set ALLOW_PRODUCTION_SEED=true to override).");
   }
 
-  // Sign in with an email code: with EMAIL_PROVIDER=log the code is printed to the server console.
   const user = await prisma.user.upsert({
     where: { email: "demo@example.com" },
     update: {},
@@ -28,7 +28,9 @@ async function main() {
       })),
     });
   }
-  console.info(`Seeded ${user.email}`);
+
+  await seedFolha(prisma);
+  console.info(`Seeded ${user.email} and Folha Viva demo data`);
 }
 
 main()
