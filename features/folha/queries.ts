@@ -1,6 +1,8 @@
 import "server-only";
 
 import { prisma } from "@/lib/db/client";
+import { validateEfolhaSheet } from "./efolha";
+import { buildPanelStats, emptyPanelStats } from "./panel";
 import { decideRow, twoSourcesConfirmed } from "./run";
 
 export async function getActiveCycle() {
@@ -136,67 +138,60 @@ export async function getCedsifDesk(cycleId: string) {
   return { payroll, movements, cases, units, unclaimed, anomalies };
 }
 
+export async function getCedsifGate() {
+  const cycle = await getActiveCycle();
+  if (!cycle) return null;
+  const [gate, desk] = await Promise.all([validateEfolhaSheet(prisma, cycle.id), getCedsifDesk(cycle.id)]);
+  return { cycle, gate, desk };
+}
+
 export async function getPublicPanel() {
   const cycle = await getActiveCycle();
   if (!cycle) {
-    return { cycle: null, districts: [] as Array<ReturnType<typeof districtMetrics>> };
+    return { cycle: null, stats: emptyPanelStats() };
   }
-  const [payroll, audits, units, contests] = await Promise.all([
+  const [payroll, audits, units, anomalies] = await Promise.all([
     getPayroll(cycle.id),
     prisma.folhaAudit.findMany({ where: { cycleId: cycle.id } }),
     prisma.folhaUnit.findMany(),
-    prisma.folhaContest.findMany({ where: { cycleId: cycle.id } }),
+    prisma.folhaAnomaly.findMany({
+      where: { cycleId: cycle.id },
+      include: {
+        unit: { select: { district: true } },
+        employee: { select: { unit: { select: { district: true } } } },
+      },
+    }),
   ]);
-  const districts = [...new Set(units.map((unit) => unit.district))].sort();
+  const districtByUnit = new Map(units.map((unit) => [unit.id, unit.district]));
   return {
     cycle,
-    districts: districts.map((district) =>
-      districtMetrics(
-        district,
-        units.filter((unit) => unit.district === district),
-        payroll.filter((row) => row.employee.unit?.district === district || (!row.employee.unit && district === "Marracuene")),
-        audits.filter((audit) => units.find((unit) => unit.id === audit.unitId)?.district === district),
-        contests.filter((contest) => payroll.find((row) => row.employee.id === contest.employeeId)?.employee.unit?.district === district),
-      ),
-    ),
+    stats: buildPanelStats({
+      units: units.map((unit) => ({
+        id: unit.id,
+        name: unit.name,
+        district: unit.district,
+        province: unit.province,
+        sector: unit.sector,
+        chiefEmployeeId: unit.chiefEmployeeId,
+      })),
+      payroll: payroll.map((row) => ({
+        unitId: row.employee.unitId,
+        district: row.employee.unit?.district ?? null,
+        salaryMzn: row.employee.salaryMzn,
+        verified: row.verified,
+        attested: Boolean(row.attestation),
+        decision: row.payment.decision,
+      })),
+      audits: audits.map((audit) => ({
+        unitId: audit.unitId,
+        district: districtByUnit.get(audit.unitId) ?? null,
+        discrepancy: audit.attestedAs === "PRESENT" && !audit.foundPresent,
+      })),
+      anomalies: anomalies.map((alert) => ({
+        unitId: alert.unitId,
+        district: alert.unit?.district ?? alert.employee?.unit?.district ?? null,
+        risk: alert.risk,
+      })),
+    }),
   };
-}
-
-function districtMetrics(
-  district: string,
-  units: Array<{ id: string; chiefEmployeeId: string | null; _count?: { employees: number } }>,
-  payroll: Awaited<ReturnType<typeof getPayroll>>,
-  audits: Array<{ attestedAs: string | null; foundPresent: boolean }>,
-  contests: Array<{ status: string; createdAt: Date; reactivatedAt: Date | null }>,
-) {
-  const withOwner = payroll.filter((row) => row.employee.unitId && units.find((unit) => unit.id === row.employee.unitId)?.chiefEmployeeId);
-  const verified = payroll.filter((row) => row.verified);
-  const unitIds = new Set(units.map((unit) => unit.id));
-  const unitsAttested = units.filter((unit) => payroll.some((row) => row.employee.unitId === unit.id && row.attestation)).length;
-  const discrepancies = audits.filter((audit) => audit.attestedAs === "PRESENT" && !audit.foundPresent).length;
-  const suspended = payroll.filter((row) => row.payment.decision === "SUSPEND");
-  const genuine = contests.filter((contest) => contest.status === "VERIFIED_GENUINE").length;
-  const reactivated = contests.filter((contest) => contest.reactivatedAt);
-  const medianDays =
-    reactivated.length === 0
-      ? null
-      : median(reactivated.map((contest) => Math.round((contest.reactivatedAt!.getTime() - contest.createdAt.getTime()) / 86_400_000)));
-  return {
-    district,
-    owned: payroll.length === 0 ? 0 : Math.round((withOwner.length / payroll.length) * 100),
-    verified: payroll.length === 0 ? 0 : Math.round((verified.length / payroll.length) * 100),
-    attestedOnTime: units.length === 0 ? 0 : Math.round((unitsAttested / units.length) * 100),
-    discrepancies,
-    exclusion: suspended.length === 0 ? 0 : Math.round((genuine / Math.max(suspended.length, 1)) * 100),
-    reactivationDays: medianDays,
-    unitCount: units.length,
-    staff: payroll.length,
-    unitIds: [...unitIds],
-  };
-}
-
-function median(values: number[]) {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0 ? Math.round((sorted[mid - 1] + sorted[mid]) / 2) : sorted[mid];
 }

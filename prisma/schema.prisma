@@ -332,6 +332,12 @@ enum FolhaCaseStatus {
   CLOSED
 }
 
+enum FolhaPaymentDecision {
+  PAY
+  HOLD
+  SUSPEND
+}
+
 model FolhaCycle {
   id        String   @id @default(uuid()) @db.Uuid
   yearMonth String   @unique @map("year_month")
@@ -344,6 +350,7 @@ model FolhaCycle {
   draws        FolhaDraw[]
   audits       FolhaAudit[]
   contests     FolhaContest[]
+  payrollBatch FolhaPayrollBatch?
 
   @@map("folha_cycles")
 }
@@ -410,6 +417,7 @@ model FolhaEmployee {
   movements    FolhaMovement[]
   contests     FolhaContest[]
   cases        FolhaCase[]
+  paymentLines FolhaPaymentLine[]
 
   @@index([nuit])
   @@index([identityCard])
@@ -536,4 +544,36 @@ model FolhaCase {
 
   @@index([status])
   @@map("folha_cases")
+}
+
+model FolhaPayrollBatch {
+  id            String     @id @default(uuid()) @db.Uuid
+  cycleId       String     @unique @map("cycle_id") @db.Uuid
+  cycle         FolhaCycle @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  source        String     @default("e-folha")
+  receivedAt    DateTime   @map("received_at") @db.Timestamptz(6)
+  validatedAt   DateTime   @map("validated_at") @db.Timestamptz(6)
+  lineCount     Int        @map("line_count")
+  releasedCount Int        @map("released_count")
+  heldCount     Int        @map("held_count")
+
+  lines FolhaPaymentLine[]
+
+  @@map("folha_payroll_batches")
+}
+
+model FolhaPaymentLine {
+  id         String               @id @default(uuid()) @db.Uuid
+  batchId    String               @map("batch_id") @db.Uuid
+  batch      FolhaPayrollBatch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  employeeId String               @map("employee_id") @db.Uuid
+  employee   FolhaEmployee        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  decision   FolhaPaymentDecision
+  reason     String
+  amountMzn  Int                  @map("amount_mzn")
+  released   Boolean
+
+  @@unique([batchId, employeeId])
+  @@index([employeeId])
+  @@map("folha_payment_lines")
 }

@@ -1,4 +1,5 @@
 import { detectAnomalies } from "../features/folha/anomalies";
+import { validateEfolhaSheet } from "../features/folha/efolha";
 import { pickMonthlyDraw } from "../features/folha/draw";
 import type { PrismaClient } from "../generated/prisma/client";
 
@@ -67,6 +68,8 @@ export async function seedFolha(prisma: PrismaClient) {
   await prisma.folhaDraw.deleteMany();
   await prisma.folhaAnomaly.deleteMany();
   await prisma.folhaAttestation.deleteMany();
+  await prisma.folhaPaymentLine.deleteMany();
+  await prisma.folhaPayrollBatch.deleteMany();
   await prisma.folhaEmployee.deleteMany();
   await prisma.folhaUnit.deleteMany();
   await prisma.folhaCycle.deleteMany();
@@ -237,4 +240,6 @@ export async function seedFolha(prisma: PrismaClient) {
       })),
     });
   }
+
+  await validateEfolhaSheet(prisma, cycle.id);
 }

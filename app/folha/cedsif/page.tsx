@@ -1,14 +1,15 @@
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Link from "next/link";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
-import { AcceptAdmissionButton, OpenCaseButton, WarnButton } from "@/features/folha/components/folha-actions";
-import { FolhaBadge } from "@/features/folha/components/folha-badge";
-import { getActiveCycle, getCedsifDesk } from "@/features/folha/queries";
-import { isNegativeMark } from "@/features/folha/types";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { directionUnitsFrom, summarizeDirections } from "@/features/folha/directions";
+import { formatMzn } from "@/features/folha/panel";
+import { getCedsifGate } from "@/features/folha/queries";
 
 export default async function CedsifPage() {
-  const cycle = await getActiveCycle();
-  if (!cycle) {
+  const view = await getCedsifGate();
+  if (!view) {
     return (
       <>
         <PageHeader title="CEDSIF" />
@@ -18,101 +19,106 @@ export default async function CedsifPage() {
       </>
     );
   }
-  const desk = await getCedsifDesk(cycle.id);
+
+  const { cycle, gate, desk } = view;
+  const releasedIds = new Set(gate.lines.filter((line) => line.released).map((line) => line.employeeId));
+  const validatedAt = new Intl.DateTimeFormat("pt", { dateStyle: "medium", timeStyle: "short" }).format(gate.validatedAt);
+  const directions = summarizeDirections(
+    directionUnitsFrom(desk.units),
+    desk.payroll.map((row) => ({
+      unitId: row.employee.unitId,
+      salaryMzn: row.employee.salaryMzn,
+      released: releasedIds.has(row.employee.id),
+    })),
+  );
+
+  const steps = [
+    {
+      step: "1",
+      title: "e-folha",
+      value: `${gate.lineCount} salários`,
+      detail: `Disponibilizou a folha de ${cycle.yearMonth}.`,
+    },
+    {
+      step: "2",
+      title: "Trigger",
+      value: `${gate.lineCount} conferidos`,
+      detail: `Cada salário, a ${validatedAt}.`,
+    },
+    {
+      step: "3",
+      title: "CEDSIF",
+      value: `${gate.releasedCount} seguem`,
+      detail: `${gate.heldCount} ficam de fora deste pagamento.`,
+    },
+  ];
 
   return (
     <>
       <PageHeader title="CEDSIF" />
       <div className="flex flex-col gap-8 px-6 pb-16 pt-6">
-        <section className="space-y-2">
-          <h2 className="text-lg font-medium">Folha de {cycle.yearMonth}</h2>
-          <p className="max-w-2xl leading-7 text-muted-foreground">
-            O pagamento só é automático quando as três fontes concordam. Nenhum alerta corta sozinho.
-          </p>
-        </section>
-
-        {desk.unclaimed.length > 0 ? (
-          <Alert variant="destructive">
-            <AlertTitle>Sem unidade há mais de 60 dias</AlertTitle>
-            <AlertDescription>{desk.unclaimed.map((row) => row.employee.name).join(", ")}</AlertDescription>
-          </Alert>
-        ) : null}
-
-        <section className="space-y-5 border-t pt-6">
-          <div className="space-y-1">
-            <h2 className="text-lg font-medium">Regra de pagamento</h2>
-            <p className="text-muted-foreground">Pagar, reter ou suspender, recalculado a partir das fontes.</p>
+        <section className="space-y-5">
+          <div className="space-y-2">
+            <h2 className="text-lg font-medium">Como a folha chega ao pagamento</h2>
+            <p className="max-w-2xl leading-7 text-muted-foreground">
+              A e-folha manda a folha. O trigger confere cada salário. O CEDSIF só paga quem passou.
+            </p>
           </div>
-          <ul className="divide-y divide-border">
-            {desk.payroll.map((row) => (
-              <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={row.employee.id}>
-                <div className="min-w-0">
-                  <p className="font-medium">{row.employee.name}</p>
-                  <p className="text-sm text-muted-foreground">{row.employee.unit?.name ?? "Sem unidade"}</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <FolhaBadge value={row.payment.decision} />
-                  <FolhaBadge value={row.payment.reason} />
-                  {row.employee.status === "ADMISSION_PENDING" ? <AcceptAdmissionButton employeeId={row.employee.id} /> : null}
-                  {row.attestation && isNegativeMark(row.attestation.mark) && !row.attestation.warnedAt ? (
-                    <WarnButton attestationId={row.attestation.id} />
-                  ) : null}
-                </div>
+          <ol className="grid gap-3 md:grid-cols-3">
+            {steps.map((item) => (
+              <li key={item.step}>
+                <Card className="h-full border">
+                  <CardHeader>
+                    <CardDescription>Passo {item.step}</CardDescription>
+                    <CardTitle>{item.title}</CardTitle>
+                    <p className="text-2xl font-medium tabular-nums">{item.value}</p>
+                    <p className="text-muted-foreground">{item.detail}</p>
+                  </CardHeader>
+                </Card>
               </li>
             ))}
-          </ul>
+          </ol>
         </section>
 
         <section className="space-y-5 border-t pt-6">
           <div className="space-y-1">
-            <h2 className="text-lg font-medium">Motor de anomalias</h2>
-            <p className="text-muted-foreground">Alto retém. Médio paga e entra na fila de verificação.</p>
+            <h2 className="text-lg font-medium">Direcções</h2>
+            <p className="max-w-2xl text-muted-foreground">
+              Abre uma direcção para ver quem segue para pagamento e quem fica de fora.
+            </p>
           </div>
-          <ul className="divide-y divide-border">
-            {desk.anomalies.map((alert) => (
-              <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={`${alert.id}-${alert.employeeId ?? alert.unitId}`}>
-                <div className="min-w-0 max-w-xl">
-                  <p className="font-medium">{alert.detail}</p>
-                  <p className="text-sm text-muted-foreground">{alert.employee?.name ?? "Unidade"}</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <FolhaBadge value={alert.type} />
-                  <FolhaBadge value={alert.risk} />
-                  {alert.employeeId ? <OpenCaseButton detail={alert.detail} employeeId={alert.employeeId} /> : null}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="space-y-5 border-t pt-6">
-          <div className="space-y-1">
-            <h2 className="text-lg font-medium">Movimentos e processos</h2>
-            <p className="text-muted-foreground">Transferências, admissões e processos abertos neste ciclo.</p>
-          </div>
-          <ul className="divide-y divide-border">
-            {desk.movements.map((movement) => (
-              <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={movement.id}>
-                <div>
-                  <p className="font-medium">{movement.employee.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {movement.toUnit ? `→ ${movement.toUnit.name}` : movement.fromUnit?.name ?? "Sem unidade"}
-                    {movement.acceptedAt ? " · aceite" : movement.type === "TRANSFER" ? " · à espera da unidade de destino" : ""}
-                  </p>
-                </div>
-                <FolhaBadge value={movement.type} />
-              </li>
-            ))}
-            {desk.cases.map((item) => (
-              <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={item.id}>
-                <div className="min-w-0 max-w-xl">
-                  <p className="font-medium">{item.employee.name}</p>
-                  <p className="text-sm leading-6 text-muted-foreground">{item.detail}</p>
-                </div>
-                <FolhaBadge value={item.type} />
-              </li>
-            ))}
-          </ul>
+          {directions.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Nenhuma direcção nesta folha.</p>
+          ) : (
+            <Table aria-label="Direcções desta folha">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Direcção</TableHead>
+                  <TableHead mobileHidden>Município</TableHead>
+                  <TableHead mobileHidden>Província</TableHead>
+                  <TableHead className="text-right">Seguem</TableHead>
+                  <TableHead className="text-right">De fora</TableHead>
+                  <TableHead className="text-right">A pagar</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {directions.map((direction) => (
+                  <TableRow className="relative" key={direction.id}>
+                    <TableCell className="font-medium">
+                      <Link className="after:absolute after:inset-0" href={`/folha/cedsif/${direction.id}`}>
+                        {direction.name}
+                      </Link>
+                    </TableCell>
+                    <TableCell mobileHidden>{direction.district ?? "—"}</TableCell>
+                    <TableCell mobileHidden>{direction.province ?? "—"}</TableCell>
+                    <TableCell className="text-right tabular-nums">{direction.releasedCount}</TableCell>
+                    <TableCell className="text-right tabular-nums">{direction.heldCount}</TableCell>
+                    <TableCell className="text-right tabular-nums">{formatMzn(direction.releasedAmount)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </section>
       </div>
     </>

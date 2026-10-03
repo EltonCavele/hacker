@@ -98,6 +98,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { ButtonDemo } from "./button-demo";
+import { ChartDemo } from "./chart-demo";
 import {
   BlurImageDemo,
   ComboboxDemo,
@@ -145,6 +146,7 @@ const index = [
   { id: "input", label: "Input + Label" },
   { id: "alert", label: "Alert" },
   { id: "card", label: "Card" },
+  { id: "chart", label: "Chart" },
   { id: "dialog", label: "Dialog" },
   { id: "alert-dialog", label: "AlertDialog" },
   { id: "sheet", label: "Sheet" },
@@ -356,6 +358,15 @@ export default function DesignSystemPage() {
             <Button className="w-full">Continue to payment</Button>
           </CardFooter>
         </Card>
+      </Section>
+      <Separator />
+
+      <Section
+        id="chart"
+        title="Chart"
+        when="Comparing a few series (counts, rates, amounts). Don't use it for one number, a dense table, or a single task's progress. Pair it with a legend or a table so colour is not the only cue. Colours come from chart and status tokens."
+      >
+        <ChartDemo />
       </Section>
       <Separator />
 

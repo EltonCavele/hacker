@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { detectAnomalies } from "./anomalies";
 import { createRng, pickMonthlyDraw } from "./draw";
 import { decidePayment } from "./payment";
+import { releasesToCedsif } from "./efolha";
 import type { FolhaEmployeeSnapshot, FolhaUnitSnapshot, PaymentContext } from "./types";
 
 const now = new Date("2026-10-03T00:00:00Z");
@@ -44,6 +45,9 @@ function cleanPay(overrides: Partial<PaymentContext> = {}): PaymentContext {
 describe("decidePayment", () => {
   it("pays a clean attested record", () => {
     expect(decidePayment(cleanPay())).toEqual({ decision: "PAY", reason: "clean" });
+    expect(releasesToCedsif("PAY")).toBe(true);
+    expect(releasesToCedsif("HOLD")).toBe(false);
+    expect(releasesToCedsif("SUSPEND")).toBe(false);
   });
 
   it("pays the team when the chief did not attest", () => {
