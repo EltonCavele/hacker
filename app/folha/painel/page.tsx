@@ -36,7 +36,7 @@ export default async function PainelPage() {
                 <div>
                   <p className="font-medium">{row.district}</p>
                   <p className="text-sm text-muted-foreground">
-                    {row.staff} salários · {row.unitCount} unidades
+                    {row.staff} salários · {row.unitCount} {row.unitCount === 1 ? "unidade" : "unidades"}
                   </p>
                 </div>
                 <dl className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-4">

@@ -48,12 +48,11 @@ export default async function CedsifPage() {
               <li className="flex flex-wrap items-center justify-between gap-3 py-3" key={row.employee.id}>
                 <div className="min-w-0">
                   <p className="font-medium">{row.employee.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {row.employee.unit?.name ?? "Sem unidade"} · {row.payment.reason}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{row.employee.unit?.name ?? "Sem unidade"}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <FolhaBadge value={row.payment.decision} />
+                  <FolhaBadge value={row.payment.reason} />
                   {row.employee.status === "ADMISSION_PENDING" ? <AcceptAdmissionButton employeeId={row.employee.id} /> : null}
                   {row.attestation && isNegativeMark(row.attestation.mark) && !row.attestation.warnedAt ? (
                     <WarnButton attestationId={row.attestation.id} />

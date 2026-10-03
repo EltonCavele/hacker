@@ -40,6 +40,17 @@ const marks: Record<string, { label: string; variant: "success" | "warning" | "d
   VERIFIED_GENUINE: { label: "Genuíno", variant: "success" },
   VERIFIED_GHOST: { label: "Fantasma", variant: "danger" },
   DISCIPLINARY: { label: "Disciplinar", variant: "warning" },
+  clean: { label: "As três fontes concordam", variant: "success" },
+  chiefDidNotAttest: { label: "Chefe ainda não atestou", variant: "muted" },
+  negativeMarkAwaitingNotice: { label: "Negativo, à espera de aviso", variant: "warning" },
+  negativeMarkWarned: { label: "Avisado, suspenso", variant: "danger" },
+  highRisk: { label: "Risco alto", variant: "danger" },
+  mediumRiskQueued: { label: "Risco médio, em verificação", variant: "warning" },
+  inTransit: { label: "Em trânsito", variant: "info" },
+  transitExpired: { label: "Trânsito passou de 60 dias", variant: "warning" },
+  contestWon: { label: "Contestação ganha", variant: "success" },
+  admissionPending: { label: "Admissão pendente", variant: "warning" },
+  drawFailed: { label: "Foto do sorteio falhou", variant: "danger" },
 };
 
 export function FolhaBadge({ value }: { value: string }) {
